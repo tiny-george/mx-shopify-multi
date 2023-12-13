@@ -1,0 +1,12 @@
+build:
+  type: mvn-quarkus-jib
+  properties:
+    container-name: extensions/shopify-multi
+    container-tag: latest
+deploy:
+  type: container-deploy
+  properties:
+    endpoint-prefix: shopify-multi
+    endpoint-accessibility: public
+multitenantConfigKeys:
+  - shopify.token
