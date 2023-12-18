@@ -11,13 +11,13 @@
  * intact.
  *
  */
-
 package info.magnolia.extensibility.shopify.service;
 
-import static info.magnolia.extensibility.shopify.service.ShopifyService.TOKEN_KEY;
+import static info.magnolia.extensibility.shopify.service.ShopifyService.*;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.is;
 
+import info.magnolia.extensibility.shopify.client.SecretValues;
 import info.magnolia.extensibility.shopify.client.ShopifyClient;
 import info.magnolia.extensibility.shopify.model.Product;
 import info.magnolia.secrets.api.Secrets;
@@ -25,7 +25,7 @@ import info.magnolia.secrets.api.Secrets;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -37,22 +37,20 @@ class ShopifyEndpointsTest {
 
     private static final String SUBSCRIPTION_ID = "aSubscriptionId";
     private static final String SHOPIFY_TOKEN = "someToken";
+    private static final String SHOPIFY_STORE_NAME = "someStoreName";
     private static final String ITEM_ID = "anItemId";
 
     @InjectMock
     Secrets secrets;
 
     @InjectMock
-    @RestClient
     ShopifyClient shopifyClient;
 
     @Test
     void listOfProducts() {
-        Mockito.when(secrets.subscriptionGet(SUBSCRIPTION_ID, TOKEN_KEY))
-                .thenReturn(Optional.of(SHOPIFY_TOKEN));
         Product product = new Product();
         product.setID(5L);
-        Mockito.when(shopifyClient.getItems(SHOPIFY_TOKEN)).thenReturn(List.of(product));
+        Mockito.when(shopifyClient.getItems(new SecretValues(SHOPIFY_TOKEN, SHOPIFY_STORE_NAME))).thenReturn(List.of(product));
 
         given().when().get("/items/all/" + SUBSCRIPTION_ID)
                 .then().statusCode(200).log().all()
@@ -63,14 +61,20 @@ class ShopifyEndpointsTest {
 
     @Test
     void oneProduct() {
-        Mockito.when(secrets.subscriptionGet(SUBSCRIPTION_ID, TOKEN_KEY))
-                .thenReturn(Optional.of(SHOPIFY_TOKEN));
         Product product = new Product();
         product.setID(7L);
-        Mockito.when(shopifyClient.getItem(SHOPIFY_TOKEN, ITEM_ID)).thenReturn(product);
+        Mockito.when(shopifyClient.getItem(new SecretValues(SHOPIFY_TOKEN, SHOPIFY_STORE_NAME), ITEM_ID)).thenReturn(product);
 
         given().when().get("/items/get/" + ITEM_ID + "/" + SUBSCRIPTION_ID)
                 .then().statusCode(200).log().all()
                 .body("id", is(7));
+    }
+
+    @BeforeEach
+    public void setupSecrets() {
+        Mockito.when(secrets.subscriptionGet(SUBSCRIPTION_ID, TOKEN_KEY))
+                .thenReturn(Optional.of(SHOPIFY_TOKEN));
+        Mockito.when(secrets.subscriptionGet(SUBSCRIPTION_ID, STORE_NAME))
+                .thenReturn(Optional.of(SHOPIFY_STORE_NAME));
     }
 }

@@ -10,3 +10,4 @@ deploy:
     endpoint-accessibility: public
 multitenantConfigKeys:
   - shopify.token
+  - shopify.store.name

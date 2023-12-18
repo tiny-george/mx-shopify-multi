@@ -11,13 +11,7 @@
  * intact.
  *
  */
-package info.magnolia.extensibility.shopify.api;
+package info.magnolia.extensibility.shopify.client;
 
-import info.magnolia.response.Response;
-
-import java.util.List;
-
-public interface ExternalDatasource<T, ID> {
-    Response<List<T>> all();
-    Response<T> byId(ID id);
+public record SecretValues(String token, String store) {
 }

@@ -15,23 +15,30 @@ package info.magnolia.extensibility.shopify.client;
 
 import info.magnolia.extensibility.shopify.model.Product;
 
+import java.net.URI;
 import java.util.List;
 
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
+import jakarta.enterprise.context.ApplicationScoped;
 
-@RegisterRestClient(configKey = "shopify")
-public interface ShopifyClient {
+@ApplicationScoped
+public class ShopifyClient {
 
-    @GET
-    @Path("/products.json")
-    List<Product> getItems(@HeaderParam("X-Shopify-Access-Token") String shopifyToken);
+    public List<Product> getItems(SecretValues secretValues) {
+        return getHttpClient(secretValues.store())
+                .getItems(secretValues.token());
+    }
 
-    @GET
-    @Path("/products/{item_id}.json")
-    Product getItem(@HeaderParam("X-Shopify-Access-Token") String shopifyToken, @PathParam("item_id") String itemId);
+    public Product getItem(SecretValues secretValues, String itemId) {
+        return getHttpClient(secretValues.store())
+                .getItem(secretValues.token(), itemId);
+    }
+
+    ShopifyHttpClient getHttpClient(String storeName) {
+        return RestClientBuilder.newBuilder()
+                .baseUri(URI.create("https://" + storeName + ".myshopify.com/admin/api/2023-10/"))
+                .followRedirects(true)
+                .build(ShopifyHttpClient.class);
+    }
 }

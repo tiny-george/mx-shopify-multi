@@ -11,7 +11,6 @@
  * intact.
  *
  */
-
 package info.magnolia.extensibility.shopify.endpoints;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -19,6 +18,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import info.magnolia.extensibility.shopify.service.ShopifyService;
 
 import jakarta.annotation.security.PermitAll;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -28,8 +28,9 @@ import jakarta.ws.rs.core.Response;
 @Path("/items")
 public class ShopifyEndpoints {
 
-    private ShopifyService shopifyService;
+    private final ShopifyService shopifyService;
 
+    @Inject
     public ShopifyEndpoints(ShopifyService shopifyService) {
         this.shopifyService = shopifyService;
     }
