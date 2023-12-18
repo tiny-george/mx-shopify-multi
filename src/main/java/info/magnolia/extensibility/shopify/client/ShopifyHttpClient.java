@@ -13,9 +13,8 @@
  */
 package info.magnolia.extensibility.shopify.client;
 
-import info.magnolia.extensibility.shopify.model.Product;
-
-import java.util.List;
+import info.magnolia.extensibility.shopify.model.ProductResponse;
+import info.magnolia.extensibility.shopify.model.ProductsResponse;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
@@ -29,9 +28,9 @@ public interface ShopifyHttpClient {
 
     @GET
     @Path("/products.json")
-    List<Product> getItems(@HeaderParam("X-Shopify-Access-Token") String shopifyToken);
+    ProductsResponse getItems(@HeaderParam("X-Shopify-Access-Token") String shopifyToken);
 
     @GET
     @Path("/products/{item_id}.json")
-    Product getItem(@HeaderParam("X-Shopify-Access-Token") String shopifyToken, @PathParam("item_id") String itemId);
+    ProductResponse getItem(@HeaderParam("X-Shopify-Access-Token") String shopifyToken, @PathParam("item_id") String itemId);
 }

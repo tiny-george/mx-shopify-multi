@@ -27,12 +27,12 @@ public class ShopifyClient {
 
     public List<Product> getItems(SecretValues secretValues) {
         return getHttpClient(secretValues.store())
-                .getItems(secretValues.token());
+                .getItems(secretValues.token()).getProducts();
     }
 
     public Product getItem(SecretValues secretValues, String itemId) {
         return getHttpClient(secretValues.store())
-                .getItem(secretValues.token(), itemId);
+                .getItem(secretValues.token(), itemId).getProduct();
     }
 
     ShopifyHttpClient getHttpClient(String storeName) {
