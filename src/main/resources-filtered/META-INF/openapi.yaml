@@ -1,0 +1,30 @@
+openapi: 3.0.0
+info:
+  title: shopify openapi contract
+  version: 1.0.0
+
+paths:
+  /items:
+    $ref: '${openapi-definition.server.url}/openapi.yaml#/paths/~1items'
+  /items/{id}:
+    $ref: '${openapi-definition.server.url}/openapi.yaml#/paths/~1items~1{id}'
+  /schematic.json:
+    get:
+      summary: Retrieve a JSON schematic
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+    
+components:
+  schemas:
+    ErrorResponse:
+      $ref: '${openapi-definition.server.url}/openapi.yaml#/components/schemas/ErrorResponse'
+    GenericItem:
+      $ref: '${openapi-definition.server.url}/openapi.yaml#/components/schemas/GenericItem'
+    GenericListResponse:
+      $ref: '${openapi-definition.server.url}/openapi.yaml#/components/schemas/GenericListResponse'
+

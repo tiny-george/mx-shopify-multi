@@ -11,7 +11,7 @@
  * intact.
  *
  */
-package info.magnolia.extensibility.shopify.service;
+package info.magnolia.extensibility.shopify.endpoints;
 
 import static info.magnolia.extensibility.shopify.service.ShopifyService.*;
 import static io.restassured.RestAssured.*;
@@ -23,6 +23,7 @@ import info.magnolia.extensibility.shopify.model.Product;
 import info.magnolia.secrets.api.Secrets;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +32,7 @@ import org.mockito.Mockito;
 
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.ws.rs.WebApplicationException;
 
 @QuarkusTest
 class ShopifyEndpointsTest {
@@ -52,10 +54,13 @@ class ShopifyEndpointsTest {
         product.setID(5L);
         Mockito.when(shopifyClient.getItems(new SecretValues(SHOPIFY_TOKEN, SHOPIFY_STORE_NAME))).thenReturn(List.of(product));
 
-        given().when().get("/items/all/" + SUBSCRIPTION_ID)
+        given().when()
+                .headers(Map.of("subscription_id", SUBSCRIPTION_ID))
+                .get("/items/")
                 .then().statusCode(200).log().all()
-                .body("size()", is(1),
-                        "id[0]", is(5)
+                .body("size", is(1),
+                        "items.size()", is(1),
+                        "items[0].id", is(5)
                 );
     }
 
@@ -65,9 +70,22 @@ class ShopifyEndpointsTest {
         product.setID(7L);
         Mockito.when(shopifyClient.getItem(new SecretValues(SHOPIFY_TOKEN, SHOPIFY_STORE_NAME), ITEM_ID)).thenReturn(product);
 
-        given().when().get("/items/get/" + ITEM_ID + "/" + SUBSCRIPTION_ID)
+        given().when()
+                .headers(Map.of("subscription_id", SUBSCRIPTION_ID))
+                .get("/items/" + ITEM_ID)
                 .then().statusCode(200).log().all()
                 .body("id", is(7));
+    }
+
+    @Test
+    void checkItemDoesNotExist() {
+
+        Mockito.when(shopifyClient.getItem(new SecretValues(SHOPIFY_TOKEN, SHOPIFY_STORE_NAME), ITEM_ID)).thenThrow(new WebApplicationException(404));
+
+        given().when()
+                .headers(Map.of("subscription_id", SUBSCRIPTION_ID))
+                .get("/items/" + ITEM_ID)
+                .then().statusCode(404).log().all();
     }
 
     @BeforeEach

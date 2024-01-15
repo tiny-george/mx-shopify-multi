@@ -15,11 +15,11 @@ package info.magnolia.extensibility.shopify.service;
 
 import info.magnolia.extensibility.shopify.client.SecretValues;
 import info.magnolia.extensibility.shopify.client.ShopifyClient;
+import info.magnolia.extensibility.shopify.dto.GenericListResponse;
 import info.magnolia.extensibility.shopify.model.Product;
 import info.magnolia.response.Response;
 import info.magnolia.secrets.api.Secrets;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -43,13 +43,15 @@ public class ShopifyService {
         this.secrets = secrets;
     }
 
-    public Response<List<Product>> getItems(String subscriptionId) {
+    public Response<GenericListResponse> getItems(String subscriptionId) {
         LOGGER.debug("Calling get all products of subscription: {}", subscriptionId);
         return secretValues(subscriptionId)
                 .map(shopifyClient::getItems)
+                .map(products -> new GenericListResponse(products.size(), products))
                 .map(Response::ok)
                 .orElseGet(() -> Response.error(new Exception("Not found a shopify config for subscription: " + subscriptionId)));
     }
+
 
     public Response<Product> getItem(String subscriptionId, String itemId) {
         LOGGER.debug("Calling get product by id: {} for subscription: {}", itemId, subscriptionId);

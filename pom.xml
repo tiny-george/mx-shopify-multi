@@ -18,6 +18,8 @@
     <surefire-plugin.version>3.1.2</surefire-plugin.version>
     <magnoliax-response.version>1.0.0-SNAPSHOT</magnoliax-response.version>
     <magnolia-extensibility.version>1.0.0-SNAPSHOT</magnolia-extensibility.version>
+    <openapi-definition.server.url>http://192.168.1.143:9999</openapi-definition.server.url>
+    <instancio-junit.version>4.0.0</instancio-junit.version>
   </properties>
 
   <dependencyManagement>
@@ -103,9 +105,25 @@
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.instancio</groupId>
+      <artifactId>instancio-junit</artifactId>
+      <version>${instancio-junit.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources-filtered</directory>
+        <filtering>true</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>${quarkus.platform.group-id}</groupId>

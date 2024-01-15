@@ -20,6 +20,7 @@ import info.magnolia.extensibility.shopify.service.ShopifyService;
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -36,10 +37,9 @@ public class ShopifyEndpoints {
     }
 
     @GET
-    @Path("/all/{subscriptionId}")
     @Produces(APPLICATION_JSON)
     @PermitAll
-    public Response allItems(@PathParam("subscriptionId") String subscriptionId) {
+    public Response allItems(@HeaderParam("subscription_id") String subscriptionId) {
         var items = shopifyService.getItems(subscriptionId);
         if (items.isOk()) {
             return Response.ok(items.get()).build();
@@ -50,10 +50,10 @@ public class ShopifyEndpoints {
     }
 
     @GET
-    @Path("/get/{itemId}/{subscriptionId}")
+    @Path("/{id}")
     @Produces(APPLICATION_JSON)
     @PermitAll
-    public Response oneItem(@PathParam("itemId") String itemId, @PathParam("subscriptionId") String subscriptionId) {
+    public Response oneItem(@PathParam("id") String itemId, @HeaderParam("subscription_id") String subscriptionId) {
         var item = shopifyService.getItem(subscriptionId, itemId);
         if (item.isOk()) {
             return Response.ok(item.get()).build();
