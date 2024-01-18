@@ -13,32 +13,40 @@
  */
 package info.magnolia.extensibility.shopify.client;
 
+import info.magnolia.extensibility.shopify.filter.StoreNameHelper;
 import info.magnolia.extensibility.shopify.model.Product;
 
-import java.net.URI;
 import java.util.List;
 
-import org.eclipse.microprofile.rest.client.RestClientBuilder;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class ShopifyClient {
+    private ShopifyHttpClient shopifyHttpClient;
+    private StoreNameHelper storeNameHelper;
+
+    @Inject
+    public ShopifyClient(
+            @RestClient
+            ShopifyHttpClient shopifyHttpClient,StoreNameHelper storeNameHelper) {
+        this.shopifyHttpClient = shopifyHttpClient;
+        this.storeNameHelper =  storeNameHelper;
+    }
 
     public List<Product> getItems(SecretValues secretValues) {
-        return getHttpClient(secretValues.store())
+        storeNameHelper.setStoreName(secretValues.store());
+        return shopifyHttpClient
                 .getItems(secretValues.token()).getProducts();
     }
 
     public Product getItem(SecretValues secretValues, String itemId) {
-        return getHttpClient(secretValues.store())
+        storeNameHelper.setStoreName(secretValues.store());
+        return shopifyHttpClient
                 .getItem(secretValues.token(), itemId).getProduct();
     }
 
-    ShopifyHttpClient getHttpClient(String storeName) {
-        return RestClientBuilder.newBuilder()
-                .baseUri(URI.create("https://" + storeName + ".myshopify.com/admin/api/2023-10/"))
-                .followRedirects(true)
-                .build(ShopifyHttpClient.class);
-    }
+
 }

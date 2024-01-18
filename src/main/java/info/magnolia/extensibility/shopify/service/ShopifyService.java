@@ -16,6 +16,7 @@ package info.magnolia.extensibility.shopify.service;
 import info.magnolia.extensibility.shopify.client.SecretValues;
 import info.magnolia.extensibility.shopify.client.ShopifyClient;
 import info.magnolia.extensibility.shopify.dto.GenericListResponse;
+import info.magnolia.extensibility.shopify.exception.NotFoundException;
 import info.magnolia.extensibility.shopify.model.Product;
 import info.magnolia.response.Response;
 import info.magnolia.secrets.api.Secrets;
@@ -39,26 +40,30 @@ public class ShopifyService {
 
     @Inject
     public ShopifyService(ShopifyClient shopifyClient, Secrets secrets) {
-        this.shopifyClient =  shopifyClient;
+        this.shopifyClient = shopifyClient;
         this.secrets = secrets;
     }
 
     public Response<GenericListResponse> getItems(String subscriptionId) {
         LOGGER.debug("Calling get all products of subscription: {}", subscriptionId);
+
         return secretValues(subscriptionId)
                 .map(shopifyClient::getItems)
                 .map(products -> new GenericListResponse(products.size(), products))
                 .map(Response::ok)
-                .orElseGet(() -> Response.error(new Exception("Not found a shopify config for subscription: " + subscriptionId)));
+                .orElseThrow(() -> new NotFoundException("Shopify config not found", "Shopify config not found for subscription: " + subscriptionId));
+
     }
 
 
     public Response<Product> getItem(String subscriptionId, String itemId) {
         LOGGER.debug("Calling get product by id: {} for subscription: {}", itemId, subscriptionId);
+
         return secretValues(subscriptionId)
-                .map(secrets -> shopifyClient.getItem(secrets, itemId))
+                .map(secretValues -> shopifyClient.getItem(secretValues, itemId))
                 .map(Response::ok)
-                .orElseGet(() -> Response.error(new Exception("Not found shopify config for subscription: " + subscriptionId)));
+                .orElseThrow(() -> new NotFoundException("Shopify config not found", "Shopify config not found for subscription: " + subscriptionId));
+
     }
 
     private Optional<SecretValues> secretValues(String subscriptionId) {
@@ -66,10 +71,10 @@ public class ShopifyService {
         var store = secrets.subscriptionGet(subscriptionId, STORE_NAME);
         if (token.isEmpty() || store.isEmpty()) {
             if (token.isEmpty()) {
-                LOGGER.error("Not found shopify token for subscription: " + subscriptionId);
+                LOGGER.error("Not found shopify token for subscription: {}", subscriptionId);
             }
             if (store.isEmpty()) {
-                LOGGER.error("Not found shopify store name for subscription: " + subscriptionId);
+                LOGGER.error("Not found shopify store name for subscription: {}", subscriptionId);
             }
             return Optional.empty();
         } else {

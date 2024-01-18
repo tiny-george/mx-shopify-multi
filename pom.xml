@@ -20,6 +20,8 @@
     <magnolia-extensibility.version>1.0.0-SNAPSHOT</magnolia-extensibility.version>
     <openapi-definition.server.url>http://192.168.1.143:9999</openapi-definition.server.url>
     <instancio-junit.version>4.0.0</instancio-junit.version>
+    <quarkus-resteasy-problem.version>3.1.0</quarkus-resteasy-problem.version>
+    <wiremock.version>3.3.1</wiremock.version>
   </properties>
 
   <dependencyManagement>
@@ -45,11 +47,11 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy</artifactId>
+      <artifactId>quarkus-resteasy-reactive</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-jackson</artifactId>
+      <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -87,9 +89,13 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-rest-client-jackson</artifactId>
+      <artifactId>quarkus-rest-client-reactive-jackson</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>com.tietoevry.quarkus</groupId>
+      <artifactId>quarkus-resteasy-problem</artifactId>
+      <version>${quarkus-resteasy-problem.version}</version>
+    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
@@ -110,6 +116,12 @@
       <artifactId>instancio-junit</artifactId>
       <version>${instancio-junit.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.wiremock</groupId>
+      <artifactId>wiremock</artifactId>
+      <scope>test</scope>
+      <version>${wiremock.version}</version>
     </dependency>
   </dependencies>
 

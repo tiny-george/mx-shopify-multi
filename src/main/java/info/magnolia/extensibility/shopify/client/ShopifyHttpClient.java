@@ -18,12 +18,14 @@ import info.magnolia.extensibility.shopify.model.ProductsResponse;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 
 @RegisterRestClient(configKey = "shopify")
+@ApplicationScoped
 public interface ShopifyHttpClient {
 
     @GET
@@ -33,4 +35,5 @@ public interface ShopifyHttpClient {
     @GET
     @Path("/products/{item_id}.json")
     ProductResponse getItem(@HeaderParam("X-Shopify-Access-Token") String shopifyToken, @PathParam("item_id") String itemId);
+
 }
