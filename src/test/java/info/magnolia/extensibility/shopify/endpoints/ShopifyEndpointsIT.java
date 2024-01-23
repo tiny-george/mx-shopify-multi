@@ -34,7 +34,7 @@ class ShopifyEndpointsIT {
     @Test
     void listOfProducts() {
         given().when()
-                .headers(Map.of("subscription_id", SUBSCRIPTION_ID))
+                .headers(Map.of("space", SUBSCRIPTION_ID))
                 .get("/items/")
                 .then().statusCode(200).log().all()
                 .body("size", is(1),
@@ -47,7 +47,7 @@ class ShopifyEndpointsIT {
     void oneProduct() {
 
         given().when()
-                .headers(Map.of("subscription_id", SUBSCRIPTION_ID))
+                .headers(Map.of("space", SUBSCRIPTION_ID))
                 .get("/items/" + ITEM_ID)
                 .then().statusCode(200).log().all()
                 .body("id", is(4494451802165L));
@@ -57,7 +57,7 @@ class ShopifyEndpointsIT {
     void checkItemDoesNotExist() {
 
         given().when()
-                .headers(Map.of("subscription_id", SUBSCRIPTION_ID))
+                .headers(Map.of("space", SUBSCRIPTION_ID))
                 .get("/items/" + "nonExistingItemId")
                 .then()
                 .contentType("application/problem+json")
