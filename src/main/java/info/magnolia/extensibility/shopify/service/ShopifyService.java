@@ -67,6 +67,7 @@ public class ShopifyService {
     }
 
     private Optional<SecretValues> secretValues(String subscriptionId) {
+        LOGGER.debug("Requesting token and secret for subscription: {}", subscriptionId);
         var token = secrets.subscriptionGet(subscriptionId, TOKEN_KEY);
         var store = secrets.subscriptionGet(subscriptionId, STORE_NAME);
         if (token.isEmpty() || store.isEmpty()) {
