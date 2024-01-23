@@ -39,7 +39,7 @@ public class ShopifyEndpoints {
     @GET
     @Produces(APPLICATION_JSON)
     @PermitAll
-    public Response allItems(@HeaderParam("space") String subscriptionId) {
+    public Response allItems(@HeaderParam( "subscription-id") String subscriptionId) {
         var items = shopifyService.getItems(subscriptionId);
         if (items.isOk()) {
             return Response.ok(items.get()).build();
@@ -53,7 +53,7 @@ public class ShopifyEndpoints {
     @Path("/{id}")
     @Produces(APPLICATION_JSON)
     @PermitAll
-    public Response oneItem(@PathParam("id") String itemId, @HeaderParam("space") String subscriptionId) {
+    public Response oneItem(@PathParam("id") String itemId, @HeaderParam( "subscription-id") String subscriptionId) {
         var item = shopifyService.getItem(subscriptionId, itemId);
         if (item.isOk()) {
             return Response.ok(item.get()).build();
