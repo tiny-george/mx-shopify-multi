@@ -104,7 +104,7 @@
     {
       "request": {
         "method": "GET",
-        "urlPath": "/products/anItemId.json"
+        "urlPath": "/products/4494451802165.json"
       },
       "response": {
         "status": 200,

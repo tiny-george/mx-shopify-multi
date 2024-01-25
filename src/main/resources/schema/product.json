@@ -41,8 +41,7 @@
       }
     },
     "Option1" : {
-      "type" : "string",
-      "const" : "DEFAULT_TITLE"
+      "type" : "string"
     }
   },
   "type" : "object",
@@ -81,8 +80,7 @@
             "type" : "integer"
           },
           "name" : {
-            "type" : "string",
-            "const" : "TITLE"
+            "type" : "string"
           },
           "position" : {
             "type" : "integer"
@@ -111,8 +109,7 @@
       "const" : "WEB"
     },
     "status" : {
-      "type" : "string",
-      "const" : "ACTIVE"
+      "type" : "string"
     },
     "tags" : {
       "type" : "string"

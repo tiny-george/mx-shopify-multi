@@ -44,7 +44,6 @@ class SchematicEndpointsIT {
                 .and().body("properties.publishedScope.type", equalTo("string"))
                 .and().body("properties.publishedScope.const", equalTo("WEB"))
                 .and().body("properties.status.type", equalTo("string"))
-                .and().body("properties.status.const", equalTo("ACTIVE"))
                 .and().body("properties.tags.type", equalTo("string"))
                 .and().body("properties.templateSuffix.type", equalTo("string"))
                 .and().body("properties.title.type", equalTo("string"))
@@ -53,8 +52,5 @@ class SchematicEndpointsIT {
                 .and().body("properties.variants.type", equalTo("array"))
                 .and().body("properties.variants.items.type", equalTo("object"))
                 .and().body("properties.vendor.type", equalTo("string"));
-
-
     }
-
 }

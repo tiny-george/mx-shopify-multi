@@ -29,7 +29,7 @@ class ShopifyEndpointsIT {
 
     private static final String SUBSCRIPTION_ID = "aSubscriptionId";
 
-    private static final String ITEM_ID = "anItemId";
+    private static final String ITEM_ID = "4494451802165";
 
     @Test
     void listOfProducts() {
@@ -62,15 +62,11 @@ class ShopifyEndpointsIT {
                 .then()
                 .contentType("application/problem+json")
                 .statusCode(404).log().all()
-                .body("status", is(404))
-                .and()
-                .body("title", is("Element not found"))
-                .and()
-                .body("detail", is("{\"errors\":\"Not Found\"}"))
-                .and()
-                .body("trace_id", is(not(empty())))
-                .and()
-                .body("span_id", is(not(empty())));
+                .body("status", is(404),
+                "title", is("Element not found"),
+                        "detail", is("{\"errors\":\"Not Found\"}"),
+                        "trace_id", is(not(empty())),
+                        "span_id", is(not(empty()))
+                );
     }
-
 }
