@@ -11,7 +11,6 @@
  * intact.
  *
  */
-
 package info.magnolia.extensibility.shopify.exception;
 
 import java.io.Serializable;
@@ -46,5 +45,4 @@ public class ShopifyExtensionException extends RuntimeException implements Seria
     public String getDetail() {
         return detail;
     }
-
 }

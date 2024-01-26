@@ -96,6 +96,7 @@
       <artifactId>quarkus-resteasy-problem</artifactId>
       <version>${quarkus-resteasy-problem.version}</version>
     </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
@@ -112,9 +113,15 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.instancio</groupId>
-      <artifactId>instancio-junit</artifactId>
-      <version>${instancio-junit.version}</version>
+      <groupId>info.magnolia.extensibility</groupId>
+      <artifactId>datasource-tck</artifactId>
+      <version>${magnolia-extensibility.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.extensibility</groupId>
+      <artifactId>datasource-http</artifactId>
+      <version>${magnolia-extensibility.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
