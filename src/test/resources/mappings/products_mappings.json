@@ -3,7 +3,12 @@
     {
       "request": {
         "method": "GET",
-        "urlPath": "/products.json"
+        "urlPath": "/products.json",
+        "headers": {
+          "X-Shopify-Access-Token": {
+            "contains": "a_token"
+          }
+        }
       },
       "response": {
         "status": 200,
@@ -104,7 +109,12 @@
     {
       "request": {
         "method": "GET",
-        "urlPath": "/products/4494451802165.json"
+        "urlPath": "/products/4494451802165.json",
+        "headers": {
+          "X-Shopify-Access-Token": {
+            "contains": "a_token"
+          }
+        }
       },
       "response": {
         "status": 200,
@@ -209,6 +219,46 @@
         "status": 404,
         "jsonBody": {
             "errors":"Not Found"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/products.json",
+        "headers": {
+          "X-Shopify-Access-Token": {
+            "contains": "nonAuthorizedToken"
+          }
+        }
+      },
+      "response": {
+        "status": 401,
+        "jsonBody": {
+          "errors":"Not Authorized"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/products.json",
+        "headers": {
+          "X-Shopify-Access-Token": {
+            "contains": "tokenForGenericExceptionSubId"
+          }
+        }
+      },
+      "response": {
+        "status": 500,
+        "jsonBody": {
+          "errors":"Unknown error"
         },
         "headers": {
           "Content-Type": "application/json"

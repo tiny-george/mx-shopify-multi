@@ -13,9 +13,11 @@
  */
 package info.magnolia.extensibility.shopify.client;
 
+import info.magnolia.extensibility.shopify.mapper.RestClientResponseMapper;
 import info.magnolia.extensibility.shopify.model.ProductResponse;
 import info.magnolia.extensibility.shopify.model.ProductsResponse;
 
+import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -25,6 +27,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 
 @RegisterRestClient(configKey = "shopify")
+@RegisterProvider(RestClientResponseMapper.class)
 @ApplicationScoped
 public interface ShopifyHttpClient {
 

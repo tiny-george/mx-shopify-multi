@@ -28,13 +28,14 @@ import io.quarkus.test.junit.QuarkusTest;
 class ShopifyEndpointsIT {
 
     private static final String SUBSCRIPTION_ID = "aSubscriptionId";
+    private static final String NOT_AUTHORIZED_SUB_ID = "nonAuthorizedSubId";
 
     private static final String ITEM_ID = "4494451802165";
 
     @Test
     void listOfProducts() {
         given().when()
-                .headers(Map.of( "subscription-id", SUBSCRIPTION_ID))
+                .headers(Map.of("subscription-id", SUBSCRIPTION_ID))
                 .get("/items/")
                 .then().statusCode(200).log().all()
                 .body("size", is(1),
@@ -47,7 +48,7 @@ class ShopifyEndpointsIT {
     void oneProduct() {
 
         given().when()
-                .headers(Map.of( "subscription-id", SUBSCRIPTION_ID))
+                .headers(Map.of("subscription-id", SUBSCRIPTION_ID))
                 .get("/items/" + ITEM_ID)
                 .then().statusCode(200).log().all()
                 .body("id", is(4494451802165L));
@@ -57,14 +58,48 @@ class ShopifyEndpointsIT {
     void checkItemDoesNotExist() {
 
         given().when()
-                .headers(Map.of( "subscription-id", SUBSCRIPTION_ID))
+                .headers(Map.of("subscription-id", SUBSCRIPTION_ID))
                 .get("/items/" + "nonExistingItemId")
                 .then()
                 .contentType("application/problem+json")
                 .statusCode(404).log().all()
                 .body("status", is(404),
-                "title", is("Element not found"),
+                        "title", is("Element not found"),
                         "detail", is("{\"errors\":\"Not Found\"}"),
+                        "trace_id", is(not(empty())),
+                        "span_id", is(not(empty()))
+                );
+    }
+
+    @Test
+    void checkNotAuthorized() {
+
+        given().when()
+                .headers(Map.of("subscription-id", NOT_AUTHORIZED_SUB_ID))
+                .get("/items/")
+                .then()
+                .contentType("application/problem+json")
+                .statusCode(401).log().all()
+                .body("status", is(401),
+                        "title", is("There was an authorization problem calling remote api"),
+                        "detail", is("{\"errors\":\"Not Authorized\"}"),
+                        "trace_id", is(not(empty())),
+                        "span_id", is(not(empty()))
+                );
+    }
+
+    @Test
+    void checkInternalServerError() {
+
+        given().when()
+                .headers(Map.of("subscription-id", "genericExceptionSubId"))
+                .get("/items/")
+                .then()
+                .contentType("application/problem+json")
+                .statusCode(500).log().all()
+                .body("status", is(500),
+                        "title", is("There was a problem calling remote api"),
+                        "detail", is("{\"errors\":\"Unknown error\"}"),
                         "trace_id", is(not(empty())),
                         "span_id", is(not(empty()))
                 );

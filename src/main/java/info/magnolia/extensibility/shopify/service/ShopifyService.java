@@ -13,10 +13,11 @@
  */
 package info.magnolia.extensibility.shopify.service;
 
+import info.magnolia.extensibility.exception.NotFoundException;
 import info.magnolia.extensibility.shopify.client.SecretValues;
 import info.magnolia.extensibility.shopify.client.ShopifyClient;
 import info.magnolia.extensibility.shopify.dto.GenericListResponse;
-import info.magnolia.extensibility.shopify.exception.NotFoundException;
+
 import info.magnolia.extensibility.shopify.model.Product;
 import info.magnolia.response.Response;
 import info.magnolia.secrets.api.Secrets;

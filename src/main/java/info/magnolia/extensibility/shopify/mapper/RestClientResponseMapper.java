@@ -13,9 +13,9 @@
  */
 package info.magnolia.extensibility.shopify.mapper;
 
-import info.magnolia.extensibility.shopify.exception.NotAuthorizedException;
-import info.magnolia.extensibility.shopify.exception.NotFoundException;
-import info.magnolia.extensibility.shopify.exception.ShopifyExtensionException;
+import info.magnolia.extensibility.exception.ExtensionException;
+import info.magnolia.extensibility.exception.NotAuthorizedException;
+import info.magnolia.extensibility.exception.NotFoundException;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -26,15 +26,15 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
 @Provider
-public class RestClientResponseMapper implements ResponseExceptionMapper<ShopifyExtensionException> {
-    private static final Map<Integer, Function<String, ShopifyExtensionException>> EXCEPTION_MAP = Map.of(
-            Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), desc -> new ShopifyExtensionException("There was a problem calling remote api", desc, Response.Status.INTERNAL_SERVER_ERROR),
+public class RestClientResponseMapper implements ResponseExceptionMapper<ExtensionException> {
+    private static final Map<Integer, Function<String, ExtensionException>> EXCEPTION_MAP = Map.of(
+            Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), desc -> new ExtensionException("There was a problem calling remote api", desc, null, null),
             Response.Status.UNAUTHORIZED.getStatusCode(), desc -> new NotAuthorizedException("There was an authorization problem calling remote api", desc),
             Response.Status.NOT_FOUND.getStatusCode(), desc -> new NotFoundException("Element not found", desc)
     );
 
     @Override
-    public ShopifyExtensionException toThrowable(Response response) {
-        return EXCEPTION_MAP.getOrDefault(response.getStatus(), (desc -> new ShopifyExtensionException("There was a problem invoking the remote api", desc, Response.Status.INTERNAL_SERVER_ERROR, null))).apply(response.readEntity(String.class));
+    public ExtensionException toThrowable(Response response) {
+        return EXCEPTION_MAP.getOrDefault(response.getStatus(), (desc -> new ExtensionException("There was a problem invoking the remote api", desc, null, null))).apply(response.readEntity(String.class));
     }
 }
