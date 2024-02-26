@@ -13,6 +13,7 @@
  */
 package info.magnolia.extensibility.shopify.client;
 
+import info.magnolia.extensibility.shopify.dto.ItemsFilter;
 import info.magnolia.extensibility.shopify.filter.StoreNameHelper;
 import info.magnolia.extensibility.shopify.model.Product;
 
@@ -36,10 +37,10 @@ public class ShopifyClient {
         this.storeNameHelper =  storeNameHelper;
     }
 
-    public List<Product> getItems(SecretValues secretValues) {
+    public List<Product> getItems(SecretValues secretValues, ItemsFilter itemsFilter) {
         storeNameHelper.setStoreName(secretValues.store());
         return shopifyHttpClient
-                .getItems(secretValues.token()).getProducts();
+                .getItems(secretValues.token(), itemsFilter.getSearchTerm()).getProducts();
     }
 
     public Product getItem(SecretValues secretValues, String itemId) {

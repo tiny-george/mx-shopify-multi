@@ -18,6 +18,7 @@ import info.magnolia.extensibility.shopify.client.SecretValues;
 import info.magnolia.extensibility.shopify.client.ShopifyClient;
 import info.magnolia.extensibility.shopify.dto.GenericListResponse;
 
+import info.magnolia.extensibility.shopify.dto.ItemsFilter;
 import info.magnolia.extensibility.shopify.model.Product;
 import info.magnolia.response.Response;
 import info.magnolia.secrets.api.Secrets;
@@ -45,11 +46,11 @@ public class ShopifyService {
         this.secrets = secrets;
     }
 
-    public Response<GenericListResponse> getItems(String subscriptionId) {
+    public Response<GenericListResponse> getItems(String subscriptionId, ItemsFilter itemsFilter) {
         LOGGER.debug("Calling get all products of subscription: {}", subscriptionId);
 
         return secretValues(subscriptionId)
-                .map(shopifyClient::getItems)
+                .map(retrievedSecrets -> shopifyClient.getItems(retrievedSecrets, itemsFilter))
                 .map(products -> new GenericListResponse(products.size(), products))
                 .map(Response::ok)
                 .orElseThrow(() -> new NotFoundException("Shopify config not found", "Shopify config not found for subscription: " + subscriptionId));

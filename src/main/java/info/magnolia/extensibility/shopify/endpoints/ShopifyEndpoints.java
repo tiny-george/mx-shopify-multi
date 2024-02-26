@@ -15,10 +15,12 @@ package info.magnolia.extensibility.shopify.endpoints;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import info.magnolia.extensibility.shopify.dto.ItemsFilter;
 import info.magnolia.extensibility.shopify.service.ShopifyService;
 
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
@@ -39,8 +41,8 @@ public class ShopifyEndpoints {
     @GET
     @Produces(APPLICATION_JSON)
     @PermitAll
-    public Response allItems(@HeaderParam( "subscription-id") String subscriptionId) {
-        var items = shopifyService.getItems(subscriptionId);
+    public Response allItems(@HeaderParam( "subscription-id") String subscriptionId, @BeanParam ItemsFilter itemsFilter) {
+        var items = shopifyService.getItems(subscriptionId, itemsFilter);
         if (items.isOk()) {
             return Response.ok(items.get()).build();
         } else {

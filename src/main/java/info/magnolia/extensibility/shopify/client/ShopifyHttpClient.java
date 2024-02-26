@@ -25,6 +25,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
 
 @RegisterRestClient(configKey = "shopify")
 @RegisterProvider(RestClientResponseMapper.class)
@@ -33,7 +34,7 @@ public interface ShopifyHttpClient {
 
     @GET
     @Path("/products.json")
-    ProductsResponse getItems(@HeaderParam("X-Shopify-Access-Token") String shopifyToken);
+    ProductsResponse getItems(@HeaderParam("X-Shopify-Access-Token") String shopifyToken, @QueryParam("title") String title);
 
     @GET
     @Path("/products/{item_id}.json")

@@ -36,11 +36,25 @@ class ShopifyEndpointsIT {
     void listOfProducts() {
         given().when()
                 .headers(Map.of("subscription-id", SUBSCRIPTION_ID))
+
                 .get("/items/")
                 .then().statusCode(200).log().all()
                 .body("size", is(1),
                         "items.size()", is(1),
                         "items[0].id", is(4494451802165L)
+                );
+    }
+
+    @Test
+    void getProductsByTitle() {
+        given().when()
+                .headers(Map.of("subscription-id", SUBSCRIPTION_ID))
+                .queryParam("searchTerm","Especial Medio Cycling Backpack")
+                .get("/items")
+                .then().statusCode(200).log().all()
+                .body("size", is(1),
+                        "items.size()", is(1),
+                        "items[0].id", is(4494451802166L)
                 );
     }
 
