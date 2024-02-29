@@ -14,6 +14,8 @@
 package info.magnolia.extensibility.shopify.client;
 
 import info.magnolia.extensibility.shopify.mapper.RestClientResponseMapper;
+import info.magnolia.extensibility.shopify.model.CustomCollectionResponse;
+import info.magnolia.extensibility.shopify.model.CustomCollectionsResponse;
 import info.magnolia.extensibility.shopify.model.ProductResponse;
 import info.magnolia.extensibility.shopify.model.ProductsResponse;
 
@@ -34,10 +36,17 @@ public interface ShopifyHttpClient {
 
     @GET
     @Path("/products.json")
-    ProductsResponse getItems(@HeaderParam("X-Shopify-Access-Token") String shopifyToken, @QueryParam("title") String title);
+    ProductsResponse getItems(@HeaderParam("X-Shopify-Access-Token") String shopifyToken, @QueryParam("title") String title, @QueryParam("collection_id") Long collectionId);
 
     @GET
     @Path("/products/{item_id}.json")
     ProductResponse getItem(@HeaderParam("X-Shopify-Access-Token") String shopifyToken, @PathParam("item_id") String itemId);
 
+    @GET
+    @Path("/custom_collections.json")
+    CustomCollectionsResponse getCategories(@HeaderParam("X-Shopify-Access-Token") String shopifyToken);
+
+    @GET
+    @Path("/custom_collections/{category_id}.json")
+    CustomCollectionResponse getCategory(@HeaderParam("X-Shopify-Access-Token") String shopifyToken, @PathParam("category_id") String categoryId);
 }

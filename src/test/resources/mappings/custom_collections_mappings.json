@@ -1,0 +1,107 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/custom_collections.json",
+        "headers": {
+          "X-Shopify-Access-Token": {
+            "contains": "a_token"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "custom_collections": [
+            {
+              "id": 1,
+              "handle": "boats",
+              "title": "Boats",
+              "updated_at": "2020-12-19T18:44:11-05:00",
+              "body_html": "",
+              "published_at": "2020-03-23T12:41:47-04:00",
+              "sort_order": "best-selling",
+              "template_suffix": "",
+              "published_scope": "web",
+              "admin_graphql_api_id": "gid:\/\/shopify\/Collection\/159166332981"
+            },
+            {
+              "id": 2,
+              "handle": "frontpage",
+              "title": "Home page",
+              "updated_at": "2020-12-19T06:09:08-05:00",
+              "body_html": null,
+              "published_at": "2019-08-07T07:16:35-04:00",
+              "sort_order": "best-selling",
+              "template_suffix": null,
+              "published_scope": "web",
+              "admin_graphql_api_id": "gid:\/\/shopify\/Collection\/137870868533"
+            },
+            {
+              "id": 3,
+              "handle": "luggage",
+              "title": "Luggage",
+              "updated_at": "2020-03-23T13:07:11-04:00",
+              "body_html": "",
+              "published_at": "2020-03-23T12:41:47-04:00",
+              "sort_order": "best-selling",
+              "template_suffix": "",
+              "published_scope": "web",
+              "admin_graphql_api_id": "gid:\/\/shopify\/Collection\/159166496821"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/custom_collections/1.json",
+        "headers": {
+          "X-Shopify-Access-Token": {
+            "contains": "a_token"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "custom_collection": {
+            "id": 1,
+            "handle": "luggage",
+            "title": "Luggage",
+            "updated_at": "2020-03-23T13:07:11-04:00",
+            "body_html": "",
+            "published_at": "2020-03-23T12:41:47-04:00",
+            "sort_order": "best-selling",
+            "template_suffix": "",
+            "published_scope": "web",
+            "admin_graphql_api_id": "gid:\/\/shopify\/Collection\/1"
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/custom_collections/2.json"
+      },
+      "response": {
+        "status": 404,
+        "jsonBody": {
+          "errors":"Not Found"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

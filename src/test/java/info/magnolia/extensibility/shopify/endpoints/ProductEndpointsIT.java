@@ -25,7 +25,7 @@ import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 @QuarkusTestResource(WireMockTestExtension.class)
-class ShopifyEndpointsIT {
+class ProductEndpointsIT {
 
     private static final String SUBSCRIPTION_ID = "aSubscriptionId";
     private static final String NOT_AUTHORIZED_SUB_ID = "nonAuthorizedSubId";
@@ -36,7 +36,6 @@ class ShopifyEndpointsIT {
     void listOfProducts() {
         given().when()
                 .headers(Map.of("subscription-id", SUBSCRIPTION_ID))
-
                 .get("/items/")
                 .then().statusCode(200).log().all()
                 .body("size", is(1),
@@ -55,6 +54,19 @@ class ShopifyEndpointsIT {
                 .body("size", is(1),
                         "items.size()", is(1),
                         "items[0].id", is(4494451802166L)
+                );
+    }
+
+    @Test
+    void getProductsByCategoryId() {
+        given().when()
+                .headers(Map.of("subscription-id", SUBSCRIPTION_ID))
+                .queryParam("categoryId",1)
+                .get("/items")
+                .then().statusCode(200).log().all()
+                .body("size", is(1),
+                        "items.size()", is(1),
+                        "items[0].id", is(4494451802167L)
                 );
     }
 

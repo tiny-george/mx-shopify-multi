@@ -13,8 +13,6 @@
  */
 package info.magnolia.extensibility.shopify.dto;
 
-import info.magnolia.extensibility.shopify.model.Product;
-
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -22,6 +20,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("GenericListResponse")
-public record GenericListResponse (Integer size, List<Product> items){
+public record GenericListResponse<T> (Integer size, List<T> items){
 }
 

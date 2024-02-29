@@ -13,12 +13,11 @@
  */
 package info.magnolia.extensibility.shopify.client;
 
-import info.magnolia.extensibility.shopify.dto.ItemsFilter;
 import info.magnolia.extensibility.shopify.filter.StoreNameHelper;
+import info.magnolia.extensibility.shopify.model.CustomCollection;
 import info.magnolia.extensibility.shopify.model.Product;
 
 import java.util.List;
-
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -32,15 +31,15 @@ public class ShopifyClient {
     @Inject
     public ShopifyClient(
             @RestClient
-            ShopifyHttpClient shopifyHttpClient,StoreNameHelper storeNameHelper) {
+            ShopifyHttpClient shopifyHttpClient, StoreNameHelper storeNameHelper) {
         this.shopifyHttpClient = shopifyHttpClient;
-        this.storeNameHelper =  storeNameHelper;
+        this.storeNameHelper = storeNameHelper;
     }
 
-    public List<Product> getItems(SecretValues secretValues, ItemsFilter itemsFilter) {
+    public List<Product> getItems(SecretValues secretValues, String title, Long collectionId) {
         storeNameHelper.setStoreName(secretValues.store());
         return shopifyHttpClient
-                .getItems(secretValues.token(), itemsFilter.getSearchTerm()).getProducts();
+                .getItems(secretValues.token(),title, collectionId).getProducts();
     }
 
     public Product getItem(SecretValues secretValues, String itemId) {
@@ -50,4 +49,15 @@ public class ShopifyClient {
     }
 
 
+    public List<CustomCollection> getCustomCollections(SecretValues secretValues) {
+        storeNameHelper.setStoreName(secretValues.store());
+        return shopifyHttpClient
+                .getCategories(secretValues.token()).getCustomCollections();
+    }
+
+    public CustomCollection getCustomCollection(SecretValues secretValues, String categoryId) {
+        storeNameHelper.setStoreName(secretValues.store());
+        return shopifyHttpClient
+                .getCategory(secretValues.token(), categoryId).getCustomCollection();
+    }
 }
