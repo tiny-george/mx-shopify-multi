@@ -11,7 +11,7 @@
  * intact.
  *
  */
-package info.magnolia.extensibility.shopify.client;
+package info.magnolia.extensibility.shopify.client.rest;
 
 import info.magnolia.extensibility.shopify.mapper.RestClientResponseMapper;
 import info.magnolia.extensibility.shopify.model.CustomCollectionResponse;

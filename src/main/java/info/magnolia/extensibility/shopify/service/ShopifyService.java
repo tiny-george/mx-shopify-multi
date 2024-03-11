@@ -15,7 +15,9 @@ package info.magnolia.extensibility.shopify.service;
 
 import info.magnolia.extensibility.exception.NotFoundException;
 import info.magnolia.extensibility.shopify.client.SecretValues;
-import info.magnolia.extensibility.shopify.client.ShopifyClient;
+import info.magnolia.extensibility.shopify.client.graphql.ShopifyGraphqlClient;
+import info.magnolia.extensibility.shopify.client.graphql.dto.Cart;
+import info.magnolia.extensibility.shopify.client.rest.ShopifyRestClient;
 import info.magnolia.extensibility.shopify.dto.GenericListResponse;
 import info.magnolia.extensibility.shopify.model.CustomCollection;
 import info.magnolia.extensibility.shopify.model.Product;
@@ -36,15 +38,19 @@ public class ShopifyService {
 
     private static final String SEARCH_TERM = "searchTerm";
     private static final String CATEGORY_ID = "categoryId";
-    public static final String TOKEN_KEY = "shopify.token";
-    public static final String STORE_NAME = "shopify.store.name";
+    private static final String TOKEN_KEY = "shopify.token";
+    private static final String STORE_NAME = "shopify.store.name";
     private static final Logger LOGGER = LoggerFactory.getLogger(ShopifyService.class);
-    private final ShopifyClient shopifyClient;
+    private static final String SHOPIFY_CONFIG_NOT_FOUND_FOR_SUBSCRIPTION = "Shopify config not found for subscription: ";
+    private static final String SHOPIFY_CONFIG_NOT_FOUND = "Shopify config not found";
+    private final ShopifyRestClient shopifyRestClient;
+    private final ShopifyGraphqlClient shopifyGraphqlClient;
     private final Secrets secrets;
 
     @Inject
-    public ShopifyService(ShopifyClient shopifyClient, Secrets secrets) {
-        this.shopifyClient = shopifyClient;
+    public ShopifyService(ShopifyRestClient shopifyRestClient, ShopifyGraphqlClient shopifyGraphqlClient, Secrets secrets) {
+        this.shopifyRestClient = shopifyRestClient;
+        this.shopifyGraphqlClient = shopifyGraphqlClient;
         this.secrets = secrets;
     }
 
@@ -52,10 +58,10 @@ public class ShopifyService {
         LOGGER.debug("Calling get all products of subscription: {}", subscriptionId);
 
         return secretValues(subscriptionId)
-                .map(retrievedSecrets -> shopifyClient.getItems(retrievedSecrets,  (String) filters.get(SEARCH_TERM), (Long) filters.computeIfPresent(CATEGORY_ID, (key, value) -> Long.valueOf((String) value))))
+                .map(retrievedSecrets -> shopifyRestClient.getItems(retrievedSecrets,  (String) filters.get(SEARCH_TERM), (Long) filters.computeIfPresent(CATEGORY_ID, (key, value) -> Long.valueOf((String) value))))
                 .map(products -> new GenericListResponse(products.size(), products))
                 .map(Response::ok)
-                .orElseThrow(() -> new NotFoundException("Shopify config not found", "Shopify config not found for subscription: " + subscriptionId));
+                .orElseThrow(() -> new NotFoundException(SHOPIFY_CONFIG_NOT_FOUND, SHOPIFY_CONFIG_NOT_FOUND_FOR_SUBSCRIPTION + subscriptionId));
 
     }
 
@@ -64,9 +70,9 @@ public class ShopifyService {
         LOGGER.debug("Calling get product by id: {} for subscription: {}", itemId, subscriptionId);
 
         return secretValues(subscriptionId)
-                .map(secretValues -> shopifyClient.getItem(secretValues, itemId))
+                .map(secretValues -> shopifyRestClient.getItem(secretValues, itemId))
                 .map(Response::ok)
-                .orElseThrow(() -> new NotFoundException("Shopify config not found", "Shopify config not found for subscription: " + subscriptionId));
+                .orElseThrow(() -> new NotFoundException(SHOPIFY_CONFIG_NOT_FOUND, SHOPIFY_CONFIG_NOT_FOUND_FOR_SUBSCRIPTION + subscriptionId));
 
     }
 
@@ -74,19 +80,29 @@ public class ShopifyService {
         LOGGER.debug("Calling get all categories (customcollections) of subscription: {}", subscriptionId);
 
         return secretValues(subscriptionId)
-                .map(shopifyClient::getCustomCollections)
+                .map(shopifyRestClient::getCustomCollections)
                 .map(products -> new GenericListResponse(products.size(), products))
                 .map(Response::ok)
-                .orElseThrow(() -> new NotFoundException("Shopify config not found", "Shopify config not found for subscription: " + subscriptionId));
+                .orElseThrow(() -> new NotFoundException(SHOPIFY_CONFIG_NOT_FOUND, SHOPIFY_CONFIG_NOT_FOUND_FOR_SUBSCRIPTION + subscriptionId));
     }
 
     public Response<CustomCollection> getCategory(String subscriptionId, String categoryId) {
         LOGGER.debug("Calling get category by id: {} for subscription: {}", categoryId, subscriptionId);
 
         return secretValues(subscriptionId)
-                .map(secretValues -> shopifyClient.getCustomCollection(secretValues, categoryId))
+                .map(secretValues -> shopifyRestClient.getCustomCollection(secretValues, categoryId))
                 .map(Response::ok)
-                .orElseThrow(() -> new NotFoundException("Shopify config not found", "Shopify config not found for subscription: " + subscriptionId));
+                .orElseThrow(() -> new NotFoundException(SHOPIFY_CONFIG_NOT_FOUND, SHOPIFY_CONFIG_NOT_FOUND_FOR_SUBSCRIPTION + subscriptionId));
+
+    }
+
+    public Response<Cart> getCart(String subscriptionId, String cartId) {
+        LOGGER.debug("Calling get cart by id: {} for subscription: {}", cartId, subscriptionId);
+
+        return secretValues(subscriptionId)
+                .map(secretValues -> shopifyGraphqlClient.getCart(secretValues, cartId))
+                .map(Response::ok)
+                .orElseThrow(() -> new NotFoundException(SHOPIFY_CONFIG_NOT_FOUND, SHOPIFY_CONFIG_NOT_FOUND_FOR_SUBSCRIPTION + subscriptionId));
 
     }
 

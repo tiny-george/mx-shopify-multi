@@ -28,7 +28,8 @@ public class WireMockTestExtension implements QuarkusTestResourceLifecycleManage
 
         return Map.of(
                 "quarkus.rest-client.secrets.url", wireMockServer.baseUrl(),
-                "quarkus.rest-client.shopify.url", wireMockServer.baseUrl()
+                "quarkus.rest-client.shopify.url", wireMockServer.baseUrl(),
+                "shopify.graphql.url", wireMockServer.baseUrl()+"/graphql"
 
         );
     }

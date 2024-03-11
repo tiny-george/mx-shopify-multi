@@ -11,8 +11,9 @@
  * intact.
  *
  */
-package info.magnolia.extensibility.shopify.client;
+package info.magnolia.extensibility.shopify.client.rest;
 
+import info.magnolia.extensibility.shopify.client.SecretValues;
 import info.magnolia.extensibility.shopify.filter.StoreNameHelper;
 import info.magnolia.extensibility.shopify.model.CustomCollection;
 import info.magnolia.extensibility.shopify.model.Product;
@@ -24,12 +25,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
-public class ShopifyClient {
+public class ShopifyRestClient {
     private ShopifyHttpClient shopifyHttpClient;
     private StoreNameHelper storeNameHelper;
 
     @Inject
-    public ShopifyClient(
+    public ShopifyRestClient(
             @RestClient
             ShopifyHttpClient shopifyHttpClient, StoreNameHelper storeNameHelper) {
         this.shopifyHttpClient = shopifyHttpClient;
