@@ -1,0 +1,32 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql",
+        "queryParameters": {
+          "mapping-name": {
+            "equalTo": "createCart"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "cartCreate": {
+              "cart": {
+                "id": "gid://shopify/Cart/Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL",
+                "checkoutUrl": "https://magboats.myshopify.com/cart/c/Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL?key=ce437d6d708a468264ab5674a5618323"
+              },
+              "userErrors": []
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

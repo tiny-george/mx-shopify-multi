@@ -17,6 +17,7 @@ import info.magnolia.extensibility.exception.ExtensionException;
 import info.magnolia.extensibility.exception.NotFoundException;
 import info.magnolia.extensibility.shopify.client.SecretValues;
 import info.magnolia.extensibility.shopify.client.graphql.dto.Cart;
+import info.magnolia.extensibility.shopify.client.graphql.dto.CartCreateResponse;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -35,20 +36,25 @@ import jakarta.inject.Inject;
 public class ShopifyGraphqlClient {
     private static final CharSequence STORE_PLACEHOLDER = "placeholder";
     private static final String GET_CART_GRAPHQL_QUERY_FILE = "/graphql/getCart-query.graphql";
+    private static final String CREATE_CART_GRAPHQL_QUERY_FILE = "/graphql/createCart-query.graphql";
+    private static final Map<String, Object> EMPTY_MAP = Map.of();
+    private final Map<String, String> queryMap;
     private String shopifyGraphqlUrl;
     private static final String CART_ID_STRING_TEMPLATE = "gid://shopify/Cart/%s";
-    private final String getCartQuery;
 
     @Inject
     public ShopifyGraphqlClient(
             @ConfigProperty(name = "shopify.graphql.url") String shopifyGraphqlUrl) {
         this.shopifyGraphqlUrl = shopifyGraphqlUrl;
-        this.getCartQuery = readQueryFromFile(GET_CART_GRAPHQL_QUERY_FILE);
+        this.queryMap = Map.of(
+                GET_CART_GRAPHQL_QUERY_FILE, readQueryFromFile(GET_CART_GRAPHQL_QUERY_FILE),
+                CREATE_CART_GRAPHQL_QUERY_FILE, readQueryFromFile(CREATE_CART_GRAPHQL_QUERY_FILE)
+        );
     }
 
     public Cart getCart(SecretValues secretValues, String cartId) {
         Response response;
-        response = doCall(secretValues, getCartQuery, Map.of("id", String.format(CART_ID_STRING_TEMPLATE, cartId)));
+        response = doCall(secretValues, queryMap.get(GET_CART_GRAPHQL_QUERY_FILE), Map.of("id", String.format(CART_ID_STRING_TEMPLATE, cartId)));
         if (response.getErrors() != null && !response.getErrors().isEmpty()) {
             throw new ExtensionException(
                     String.format("Remote api returned some errors: %s", response.getErrors().stream().map(GraphQLError::getMessage).collect(Collectors.joining(System.lineSeparator())))
@@ -63,15 +69,17 @@ public class ShopifyGraphqlClient {
         }
     }
 
-    private Response doCall(SecretValues secretValues, String query, Map<String, Object> variables) {
+    public Cart createCart(SecretValues secretValues) {
         Response response;
-        try {
-            var dynamicGraphQLClient = DynamicGraphQLClientBuilder.newBuilder().url(getShopifyGraphqlUrl(secretValues.store())).header("Shopify-Storefront-Private-Token", secretValues.token()).build();
-            response = dynamicGraphQLClient.executeSync(query, variables);
-        } catch (Exception e) {
-            throw new ExtensionException("There was a problem calling storefront api", e.getMessage(), variables, e);
+        response = doCall(secretValues, queryMap.get(CREATE_CART_GRAPHQL_QUERY_FILE), EMPTY_MAP);
+        if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+            throw new ExtensionException(
+                    String.format("Remote api returned some errors: %s", response.getErrors().stream().map(GraphQLError::getMessage).collect(Collectors.joining(System.lineSeparator())))
+                    , null, EMPTY_MAP, null);
+        } else {
+            var cartCreateResponse = response.getObject(CartCreateResponse.class, "cartCreate");
+            return cartCreateResponse.cart();
         }
-        return response;
     }
 
     private String readQueryFromFile(String fileName) {
@@ -88,5 +96,16 @@ public class ShopifyGraphqlClient {
         } else {
             return shopifyGraphqlUrl;
         }
+    }
+
+    private Response doCall(SecretValues secretValues, String query, Map<String, Object> variables) {
+        Response response;
+        try {
+            var dynamicGraphQLClient = DynamicGraphQLClientBuilder.newBuilder().url(getShopifyGraphqlUrl(secretValues.store())).header("Shopify-Storefront-Private-Token", secretValues.token()).build();
+            response = dynamicGraphQLClient.executeSync(query, variables);
+        } catch (Exception e) {
+            throw new ExtensionException("There was a problem calling storefront api", e.getMessage(), variables, e);
+        }
+        return response;
     }
 }

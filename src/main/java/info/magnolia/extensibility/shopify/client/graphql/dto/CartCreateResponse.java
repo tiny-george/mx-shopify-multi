@@ -14,16 +14,4 @@
 
 package info.magnolia.extensibility.shopify.client.graphql.dto;
 
-import java.util.List;
-
-public record Cart(
-        String id,
-        String checkoutUrl,
-        String createdAt,
-        String updatedAt,
-        Lines lines,
-        List<Attributes> attributes,
-        Cost cost,
-        BuyerIdentity buyerIdentity
-) { }
-
+public record CartCreateResponse(Cart cart) { }

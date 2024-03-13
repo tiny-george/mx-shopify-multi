@@ -122,4 +122,13 @@ public class ShopifyService {
             return Optional.of(new SecretValues(token.get(), store.get()));
         }
     }
+
+    public Response<Cart> createCart(String subscriptionId) {
+        LOGGER.debug("Calling create cart for subscription: {}", subscriptionId);
+
+        return secretValues(subscriptionId)
+                .map(shopifyGraphqlClient::createCart)
+                .map(Response::ok)
+                .orElseThrow(() -> new NotFoundException(SHOPIFY_CONFIG_NOT_FOUND, SHOPIFY_CONFIG_NOT_FOUND_FOR_SUBSCRIPTION + subscriptionId));
+    }
 }
