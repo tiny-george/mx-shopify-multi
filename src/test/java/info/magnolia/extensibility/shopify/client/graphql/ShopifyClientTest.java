@@ -32,24 +32,27 @@ import io.quarkus.test.junit.QuarkusTest;
 @QuarkusTestResource(WireMockTestExtension.class)
 class ShopifyClientTest {
     private static final String EXISTING_CART_ID = "Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL";
-    private static final String EXISTING_CART_GID = "gid://shopify/Cart/"+EXISTING_CART_ID;
+    private static final String EXISTING_CART_GID = "gid://shopify/Cart/" + EXISTING_CART_ID;
     private static final String VARIANT_ID = "31775513411637";
     private static final String NON_EXISTING_VARIANT_ID = "nonExistingVariantId";
-    private static final String EXISTING_VARIANT_GID = "gid://shopify/ProductVariant/"+VARIANT_ID;
+    private static final String EXISTING_VARIANT_GID = "gid://shopify/ProductVariant/" + VARIANT_ID;
     private static final String NON_EXISTING_CART_ID = "nonExistingCartId";
-    private static final String NON_EXISTING_CART_GID = EXISTING_CART_GID+NON_EXISTING_CART_ID;
+    private static final String NON_EXISTING_CART_GID = EXISTING_CART_GID + NON_EXISTING_CART_ID;
     private static final String A_STORE = "aStore";
     private static final String GET_CART_BY_ID = "getCartById";
     private static final String CREATE_CART = "createCart";
     private static final String ADD_LINE_TO_CART = "addLineToCart";
     private static final String REMOVE_LINE_FROM_CART = "removeLineFromCart";
+    private static final String UPDATE_LINE_FROM_CART = "updateLineFromCart";
     private static final String MAPPING_NAME_TEMPLATE = "?mapping-name=%s";
     private static final String EMPTY_TOKEN = "";
     private static final String INVALID_ID = "invalidId";
     private static final String CRASH_ID = "crashId";
     private static final SecretValues SECRET_VALUES = new SecretValues(EMPTY_TOKEN, A_STORE);
-    private static final String CART_LINE_ID = "9b630dd5-9d42-4c61-ae7b-27c8cab8b471";
+    private static final String CART_LINE_ID = "0c9885eb-8cc5-49f3-a996-93b9fef31987";
+    private static final String EXISTING_CART_LINE_GID = "gid://shopify/CartLine/" + CART_LINE_ID + "?cart=" + EXISTING_CART_ID;
     private static final String NON_EXISTING_LINE_ID = "nonExistingLineId";
+    private static final String WRONG_LINE_ID = "wrongLineId";
 
     @ConfigProperty(name = "shopify.graphql.url")
     String shopifyGraphqlUrl;
@@ -57,7 +60,7 @@ class ShopifyClientTest {
     @Test
     @DisplayName("Should return a valid cart when an existing id is provided")
     void shouldReturnValidCartWhenExistingIdIsProvided() {
-        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, GET_CART_BY_ID));
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format(MAPPING_NAME_TEMPLATE, GET_CART_BY_ID));
         var result = shopifyGraphqlClient.getCart(SECRET_VALUES, EXISTING_CART_ID);
         assertNotNull(result);
         assertEquals(EXISTING_CART_GID, result.id());
@@ -66,7 +69,7 @@ class ShopifyClientTest {
     @Test
     @DisplayName("Should return a null cart when a non-existing id is provided")
     void shouldReturnNullCartWhenNonExistingIdIsProvided() {
-        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, GET_CART_BY_ID));
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format(MAPPING_NAME_TEMPLATE, GET_CART_BY_ID));
         ExtensionException notFoundException = Assertions.assertThrows(ExtensionException.class, () -> shopifyGraphqlClient.getCart(SECRET_VALUES, NON_EXISTING_CART_ID));
 
         assertEquals("Cart not found", notFoundException.getTitle());
@@ -77,7 +80,7 @@ class ShopifyClientTest {
     @DisplayName("Should return errors when query is not valid")
     void shouldReturnErrorsWhenQueryIsNotValid() {
 
-        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, GET_CART_BY_ID));
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format(MAPPING_NAME_TEMPLATE, GET_CART_BY_ID));
 
         ExtensionException extensionException = Assertions.assertThrows(ExtensionException.class, () -> shopifyGraphqlClient.getCart(SECRET_VALUES, INVALID_ID));
 
@@ -87,7 +90,7 @@ class ShopifyClientTest {
     @Test
     @DisplayName("Should throw exception when communication error occurs")
     void shouldThrowExceptionWhenCommunicationErrorOccurs() {
-        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, GET_CART_BY_ID));
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format(MAPPING_NAME_TEMPLATE, GET_CART_BY_ID));
 
         SecretValues secretValues = new SecretValues("aToken", "aStore");
 
@@ -99,7 +102,7 @@ class ShopifyClientTest {
     @Test
     @DisplayName("Should create a cart without any problems")
     void shouldCreateCartWithoutAnyProblems() {
-        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, CREATE_CART));
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format(MAPPING_NAME_TEMPLATE, CREATE_CART));
         var result = shopifyGraphqlClient.createCart(SECRET_VALUES);
         assertNotNull(result);
         assertNotNull(result.id());
@@ -110,13 +113,13 @@ class ShopifyClientTest {
     @Test
     @DisplayName("Should add a line to a cart without any problems")
     void shouldAddLineToCartWithoutAnyProblems() {
-        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, ADD_LINE_TO_CART));
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format(MAPPING_NAME_TEMPLATE, ADD_LINE_TO_CART));
         var result = shopifyGraphqlClient.addLineToCart(SECRET_VALUES, EXISTING_CART_ID, VARIANT_ID, 1);
         assertNotNull(result);
         assertNotNull(result.id());
         assertEquals(EXISTING_CART_GID, result.id());
         assertTrue(result.lines().edges().stream().
-                anyMatch( line -> line.node().merchandise().id().equals(EXISTING_VARIANT_GID) && line.node().quantity() == 1));
+                anyMatch(line -> line.node().merchandise().id().equals(EXISTING_VARIANT_GID) && line.node().quantity() == 1));
     }
 
     @Test
@@ -125,7 +128,7 @@ class ShopifyClientTest {
         /**
          * I promise: this is how the real shopify api works
          */
-        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, ADD_LINE_TO_CART));
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format(MAPPING_NAME_TEMPLATE, ADD_LINE_TO_CART));
         var result = shopifyGraphqlClient.addLineToCart(SECRET_VALUES, NON_EXISTING_CART_ID, VARIANT_ID, 1);
         assertNotNull(result);
         assertNotNull(result.id());
@@ -139,7 +142,7 @@ class ShopifyClientTest {
         /**
          * I promise: this is how the real shopify api works
          */
-        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, ADD_LINE_TO_CART));
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format(MAPPING_NAME_TEMPLATE, ADD_LINE_TO_CART));
         var result = shopifyGraphqlClient.addLineToCart(SECRET_VALUES, NON_EXISTING_CART_ID, NON_EXISTING_VARIANT_ID, 1);
         assertNull(result);
     }
@@ -147,7 +150,7 @@ class ShopifyClientTest {
     @Test
     @DisplayName("Should remove a line from a cart without any problems")
     void shouldRemoveLineFromCartWithoutAnyProblems() {
-        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, REMOVE_LINE_FROM_CART));
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format(MAPPING_NAME_TEMPLATE, REMOVE_LINE_FROM_CART));
         var result = shopifyGraphqlClient.removeLineFromCart(SECRET_VALUES, EXISTING_CART_ID, CART_LINE_ID);
         assertNotNull(result);
         assertNotNull(result.id());
@@ -161,7 +164,7 @@ class ShopifyClientTest {
         /**
          * I promise: this is how the real shopify api works
          */
-        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, REMOVE_LINE_FROM_CART));
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format(MAPPING_NAME_TEMPLATE, REMOVE_LINE_FROM_CART));
         var result = shopifyGraphqlClient.removeLineFromCart(SECRET_VALUES, NON_EXISTING_CART_ID, CART_LINE_ID);
         assertNotNull(result);
         assertNotNull(result.id());
@@ -175,11 +178,37 @@ class ShopifyClientTest {
         /**
          * I promise: this is how the real shopify api works
          */
-        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, REMOVE_LINE_FROM_CART));
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format(MAPPING_NAME_TEMPLATE, REMOVE_LINE_FROM_CART));
         var result = shopifyGraphqlClient.removeLineFromCart(SECRET_VALUES, EXISTING_CART_ID, NON_EXISTING_LINE_ID);
         assertNotNull(result);
         assertNotNull(result.id());
         assertEquals(EXISTING_CART_GID, result.id());
+        assertTrue(result.lines().edges().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should update the quantity of a line from a cart without any problems")
+    void shouldUpdateLineFromCartWithoutAnyProblems() {
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format(MAPPING_NAME_TEMPLATE, UPDATE_LINE_FROM_CART));
+        var result = shopifyGraphqlClient.updateQuantity(SECRET_VALUES, EXISTING_CART_ID, CART_LINE_ID, 10);
+        assertNotNull(result);
+        assertNotNull(result.id());
+        assertEquals(EXISTING_CART_GID, result.id());
+        assertTrue(result.lines().edges().stream().
+                anyMatch(line -> line.node().id().equals(EXISTING_CART_LINE_GID) && line.node().quantity() == 10));
+    }
+
+    @Test
+    @DisplayName("Should throw an exception when wrong lineId is provided")
+    void shouldThrowExceptionWhenWrongLineIdIsProvided() {
+        /**
+         * I promise: this is how the real shopify api works
+         */
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format(MAPPING_NAME_TEMPLATE, UPDATE_LINE_FROM_CART));
+        var result = shopifyGraphqlClient.updateQuantity(SECRET_VALUES, NON_EXISTING_CART_ID, CART_LINE_ID, 10);
+        assertNotNull(result);
+        assertNotNull(result.id());
+        assertNotEquals(EXISTING_CART_GID, result.id());
         assertTrue(result.lines().edges().isEmpty());
     }
 

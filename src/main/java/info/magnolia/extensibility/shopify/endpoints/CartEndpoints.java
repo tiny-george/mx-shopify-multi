@@ -67,7 +67,7 @@ public class CartEndpoints {
         }
     }
 
-    @PUT
+    @POST
     @Path("/{cartId}/line/{productId}")
     @Produces(APPLICATION_JSON)
     @PermitAll
@@ -87,6 +87,20 @@ public class CartEndpoints {
     @PermitAll
     public Response removeLineFromCart(@HeaderParam("subscription-id") String subscriptionId, @PathParam("cartId") String cartId, @PathParam("lineId") String lineId) {
         var item = shopifyService.removeLineFromCart(subscriptionId, cartId, lineId);
+        if (item.isOk()) {
+            return Response.ok(item.get()).build();
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(item.getError().getMessage()).build();
+        }
+    }
+
+    @PUT
+    @Path("/{cartId}/line/{lineId}")
+    @Produces(APPLICATION_JSON)
+    @PermitAll
+    public Response updateLineQuantity(@HeaderParam("subscription-id") String subscriptionId, @PathParam("cartId") String cartId, @PathParam("lineId") String lineId, @QueryParam("quantity") Integer quantity) {
+        var item = shopifyService.updateQuantity(subscriptionId, cartId, lineId, quantity);
         if (item.isOk()) {
             return Response.ok(item.get()).build();
         } else {

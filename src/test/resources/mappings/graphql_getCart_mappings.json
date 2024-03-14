@@ -27,7 +27,7 @@
                 "edges": [
                   {
                     "node": {
-                      "id": "gid://shopify/CartLine/9b630dd5-9d42-4c61-ae7b-27c8cab8b471?cart=Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL",
+                      "id": "gid://shopify/CartLine/0c9885eb-8cc5-49f3-a996-93b9fef31987?cart=Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL",
                       "quantity": 1,
                       "merchandise": {
                         "id": "gid://shopify/ProductVariant/31775513411637"
