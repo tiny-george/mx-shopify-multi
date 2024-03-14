@@ -134,9 +134,17 @@ public class ShopifyService {
     }
 
     public Response<Cart> addLineToCart(String subscriptionId, String cartId, String productId, Integer quantity) {
-        LOGGER.debug("Calling add line to cart: {} for subscription: {}, product: {} and quantity: {}", subscriptionId, cartId, productId, quantity );
+        LOGGER.debug("Calling add line to cart: {} for subscription: {}, product: {} and quantity: {}", cartId, subscriptionId, productId, quantity );
         return secretValues(subscriptionId)
                 .map( secret -> shopifyGraphqlClient.addLineToCart (secret, cartId, productId, getSanitizedQuantity(quantity)))
+                .map(Response::ok)
+                .orElseThrow(() -> new NotFoundException(SHOPIFY_CONFIG_NOT_FOUND, SHOPIFY_CONFIG_NOT_FOUND_FOR_SUBSCRIPTION + subscriptionId));
+    }
+
+    public Response<Cart> removeLineFromCart(String subscriptionId, String cartId, String lineId) {
+        LOGGER.debug("Calling remove line from cart: {} for subscription: {}, cart: {} and line: {}", subscriptionId, cartId, lineId);
+        return secretValues(subscriptionId)
+                .map( secret -> shopifyGraphqlClient.removeLineFromCart(secret, cartId, lineId))
                 .map(Response::ok)
                 .orElseThrow(() -> new NotFoundException(SHOPIFY_CONFIG_NOT_FOUND, SHOPIFY_CONFIG_NOT_FOUND_FOR_SUBSCRIPTION + subscriptionId));
     }

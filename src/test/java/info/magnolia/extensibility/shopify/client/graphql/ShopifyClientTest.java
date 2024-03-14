@@ -42,12 +42,14 @@ class ShopifyClientTest {
     private static final String GET_CART_BY_ID = "getCartById";
     private static final String CREATE_CART = "createCart";
     private static final String ADD_LINE_TO_CART = "addLineToCart";
+    private static final String REMOVE_LINE_FROM_CART = "removeLineFromCart";
     private static final String MAPPING_NAME_TEMPLATE = "?mapping-name=%s";
     private static final String EMPTY_TOKEN = "";
     private static final String INVALID_ID = "invalidId";
     private static final String CRASH_ID = "crashId";
-
     private static final SecretValues SECRET_VALUES = new SecretValues(EMPTY_TOKEN, A_STORE);
+    private static final String CART_LINE_ID = "9b630dd5-9d42-4c61-ae7b-27c8cab8b471";
+    private static final String NON_EXISTING_LINE_ID = "nonExistingLineId";
 
     @ConfigProperty(name = "shopify.graphql.url")
     String shopifyGraphqlUrl;
@@ -118,8 +120,8 @@ class ShopifyClientTest {
     }
 
     @Test
-    @DisplayName("Should create a new cart when a wrong cartId is provided")
-    void shouldCreateNewCartWhenWrongCartIdIsProvided() {
+    @DisplayName("Should create a new cart when adding a line is requested, providing a wrong cartId")
+    void shouldCreateNewCartWhenAddLineIsRequestedProvidingWrongCartId() {
         /**
          * I promise: this is how the real shopify api works
          */
@@ -132,7 +134,7 @@ class ShopifyClientTest {
     }
 
     @Test
-    @DisplayName("Should return null cart when a wrong variantId is provided")
+    @DisplayName("Should return null cart when adding a line is requested, providing a wrong variantId")
     void shouldReturnNullCartWhenNonExistingVariantIdIsProvided() {
         /**
          * I promise: this is how the real shopify api works
@@ -141,4 +143,44 @@ class ShopifyClientTest {
         var result = shopifyGraphqlClient.addLineToCart(SECRET_VALUES, NON_EXISTING_CART_ID, NON_EXISTING_VARIANT_ID, 1);
         assertNull(result);
     }
+
+    @Test
+    @DisplayName("Should remove a line from a cart without any problems")
+    void shouldRemoveLineFromCartWithoutAnyProblems() {
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, REMOVE_LINE_FROM_CART));
+        var result = shopifyGraphqlClient.removeLineFromCart(SECRET_VALUES, EXISTING_CART_ID, CART_LINE_ID);
+        assertNotNull(result);
+        assertNotNull(result.id());
+        assertEquals(EXISTING_CART_GID, result.id());
+        assertTrue(result.lines().edges().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should create a new cart when removing a line is requested providing a non existing cartId")
+    void shouldCreateNewCartWhenRemovingLineIsRequestedWithNonExistingCartId() {
+        /**
+         * I promise: this is how the real shopify api works
+         */
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, REMOVE_LINE_FROM_CART));
+        var result = shopifyGraphqlClient.removeLineFromCart(SECRET_VALUES, NON_EXISTING_CART_ID, CART_LINE_ID);
+        assertNotNull(result);
+        assertNotNull(result.id());
+        assertNotEquals(EXISTING_CART_GID, result.id());
+        assertTrue(result.lines().edges().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Should return existing cart in its current status when removing a line is requested with non existing line id")
+    void shouldReturnExistingCartInItsCurrentStatusWhenRemovingLineIsRequestedWithNonExistingLineId() {
+        /**
+         * I promise: this is how the real shopify api works
+         */
+        ShopifyGraphqlClient shopifyGraphqlClient = new ShopifyGraphqlClient(shopifyGraphqlUrl + String.format (MAPPING_NAME_TEMPLATE, REMOVE_LINE_FROM_CART));
+        var result = shopifyGraphqlClient.removeLineFromCart(SECRET_VALUES, EXISTING_CART_ID, NON_EXISTING_LINE_ID);
+        assertNotNull(result);
+        assertNotNull(result.id());
+        assertEquals(EXISTING_CART_GID, result.id());
+        assertTrue(result.lines().edges().isEmpty());
+    }
+
 }

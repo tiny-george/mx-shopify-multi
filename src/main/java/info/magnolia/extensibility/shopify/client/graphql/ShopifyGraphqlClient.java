@@ -42,10 +42,12 @@ public class ShopifyGraphqlClient {
     private static final String GET_CART_GRAPHQL_QUERY_FILE = "/graphql/getCart-query.graphql";
     private static final String CREATE_CART_GRAPHQL_QUERY_FILE = "/graphql/createCart-query.graphql";
     private static final String ADD_LINE_CART_GRAPHQL_QUERY_FILE = "/graphql/addLineCart-query.graphql";
+    private static final String REMOVE_LINE_CART_GRAPHQL_QUERY_FILE = "/graphql/removeLineCart-query.graphql";
     private static final Map<String, Object> EMPTY_MAP = Map.of();
     private static final String GID_SHOPIFY_PRODUCT_VARIANT = "gid://shopify/ProductVariant/%s";
+    private static final String GID_SHOPIFY_LINE = "gid://shopify/CartLine/%s?cart=%s";
     private final Map<String, String> queryMap;
-    private String shopifyGraphqlUrl;
+    private final String shopifyGraphqlUrl;
     private static final String CART_ID_STRING_TEMPLATE = "gid://shopify/Cart/%s";
 
     @Inject
@@ -55,7 +57,8 @@ public class ShopifyGraphqlClient {
         this.queryMap = Map.of(
                 GET_CART_GRAPHQL_QUERY_FILE, readQueryFromFile(GET_CART_GRAPHQL_QUERY_FILE),
                 CREATE_CART_GRAPHQL_QUERY_FILE, readQueryFromFile(CREATE_CART_GRAPHQL_QUERY_FILE),
-                ADD_LINE_CART_GRAPHQL_QUERY_FILE, readQueryFromFile(ADD_LINE_CART_GRAPHQL_QUERY_FILE)
+                ADD_LINE_CART_GRAPHQL_QUERY_FILE, readQueryFromFile(ADD_LINE_CART_GRAPHQL_QUERY_FILE),
+                REMOVE_LINE_CART_GRAPHQL_QUERY_FILE, readQueryFromFile(REMOVE_LINE_CART_GRAPHQL_QUERY_FILE)
         );
     }
 
@@ -98,6 +101,19 @@ public class ShopifyGraphqlClient {
                     , null, EMPTY_MAP, null);
         } else {
             var cartCreateResponse = response.getObject(CartAddLineResponse.class, "cartLinesAdd");
+            return cartCreateResponse.cart();
+        }
+    }
+
+    public Cart removeLineFromCart(SecretValues secretValues, String cartId, String lineId) {
+        Response response;
+        response = doCall(secretValues, queryMap.get(REMOVE_LINE_CART_GRAPHQL_QUERY_FILE), Map.of("cartId", String.format(CART_ID_STRING_TEMPLATE, cartId), "lineIds", List.of(String.format(GID_SHOPIFY_LINE, lineId, cartId))));
+        if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+            throw new ExtensionException(
+                    String.format("Remote api returned some errors: %s", response.getErrors().stream().map(GraphQLError::getMessage).collect(Collectors.joining(System.lineSeparator())))
+                    , null, EMPTY_MAP, null);
+        } else {
+            var cartCreateResponse = response.getObject(CartAddLineResponse.class, "cartLinesRemove");
             return cartCreateResponse.cart();
         }
     }

@@ -1,0 +1,178 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql",
+        "queryParameters": {
+          "mapping-name": {
+            "equalTo": "removeLineFromCart"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.variables.cartId == 'gid://shopify/Cart/Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL')]"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "cartLinesRemove": {
+              "cart": {
+                "id": "gid://shopify/Cart/Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL",
+                "createdAt": "2024-03-07T14:16:14Z",
+                "updatedAt": "2024-03-14T07:43:32Z",
+                "lines": {
+                  "edges": [
+                  ]
+                },
+                "attributes": [],
+                "cost": {
+                  "totalAmount": {
+                    "amount": "0.0",
+                    "currencyCode": "EUR"
+                  },
+                  "subtotalAmount": {
+                    "amount": "0.0",
+                    "currencyCode": "EUR"
+                  },
+                  "totalTaxAmount": null,
+                  "totalDutyAmount": null
+                },
+                "buyerIdentity": {
+                  "email": null,
+                  "phone": null,
+                  "customer": null,
+                  "countryCode": null,
+                  "deliveryAddressPreferences": []
+                }
+              }
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql",
+        "queryParameters": {
+          "mapping-name": {
+            "equalTo": "removeLineFromCart"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.variables.cartId == 'gid://shopify/Cart/nonExistingCartId')]"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "cartLinesRemove": {
+              "cart": {
+                "id": "gid://shopify/Cart/Z2NwLXVzLWNlbnRyYWwxOjAxSFJZMEJORzhBMDlTR1ZIRjdaWkZQMkJL",
+                "createdAt": "2024-03-14T14:16:14Z",
+                "updatedAt": "2024-03-14T07:43:32Z",
+                "lines": {
+                  "edges": [
+                  ]
+                },
+                "attributes": [],
+                "cost": {
+                  "totalAmount": {
+                    "amount": "0.0",
+                    "currencyCode": "EUR"
+                  },
+                  "subtotalAmount": {
+                    "amount": "0.0",
+                    "currencyCode": "EUR"
+                  },
+                  "totalTaxAmount": null,
+                  "totalDutyAmount": null
+                },
+                "buyerIdentity": {
+                  "email": null,
+                  "phone": null,
+                  "customer": null,
+                  "countryCode": null,
+                  "deliveryAddressPreferences": []
+                }
+              }
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql",
+        "queryParameters": {
+          "mapping-name": {
+            "equalTo": "removeLineFromCart"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.variables.cartId == 'gid://shopify/Cart/Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL')]"
+          },
+          {
+            "matchesJsonPath": "$[?(@.variables.lineIds[?(@ == 'gid://shopify/CartLine/nonExistingLineId?cart=Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL')])]"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "cartLinesRemove": {
+              "cart": {
+                "id": "gid://shopify/Cart/Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL",
+                "createdAt": "2024-03-07T14:16:14Z",
+                "updatedAt": "2024-03-14T07:43:32Z",
+                "lines": {
+                  "edges": [
+                  ]
+                },
+                "attributes": [],
+                "cost": {
+                  "totalAmount": {
+                    "amount": "0.0",
+                    "currencyCode": "EUR"
+                  },
+                  "subtotalAmount": {
+                    "amount": "0.0",
+                    "currencyCode": "EUR"
+                  },
+                  "totalTaxAmount": null,
+                  "totalDutyAmount": null
+                },
+                "buyerIdentity": {
+                  "email": null,
+                  "phone": null,
+                  "customer": null,
+                  "countryCode": null,
+                  "deliveryAddressPreferences": []
+                }
+              }
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

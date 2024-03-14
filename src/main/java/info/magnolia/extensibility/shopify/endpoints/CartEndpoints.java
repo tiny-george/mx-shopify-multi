@@ -19,6 +19,7 @@ import info.magnolia.extensibility.shopify.service.ShopifyService;
 
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
@@ -67,11 +68,25 @@ public class CartEndpoints {
     }
 
     @PUT
-    @Path("/{cartId}/{productId}")
+    @Path("/{cartId}/line/{productId}")
     @Produces(APPLICATION_JSON)
     @PermitAll
     public Response addLineToCart(@HeaderParam("subscription-id") String subscriptionId, @PathParam("cartId") String cartId, @PathParam("productId") String productId, @QueryParam("quantity") Integer quantity) {
         var item = shopifyService.addLineToCart(subscriptionId, cartId, productId, quantity);
+        if (item.isOk()) {
+            return Response.ok(item.get()).build();
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(item.getError().getMessage()).build();
+        }
+    }
+
+    @DELETE
+    @Path("/{cartId}/line/{lineId}")
+    @Produces(APPLICATION_JSON)
+    @PermitAll
+    public Response removeLineFromCart(@HeaderParam("subscription-id") String subscriptionId, @PathParam("cartId") String cartId, @PathParam("lineId") String lineId) {
+        var item = shopifyService.removeLineFromCart(subscriptionId, cartId, lineId);
         if (item.isOk()) {
             return Response.ok(item.get()).build();
         } else {
