@@ -18,9 +18,13 @@ import info.magnolia.extensibility.exception.NotFoundException;
 import info.magnolia.extensibility.shopify.client.SecretValues;
 import info.magnolia.extensibility.shopify.client.graphql.dto.Cart;
 import info.magnolia.extensibility.shopify.client.graphql.dto.CartCreateResponse;
+import info.magnolia.extensibility.shopify.client.graphql.dto.CartAddLineResponse;
+import info.magnolia.extensibility.shopify.client.graphql.dto.Line;
+import info.magnolia.extensibility.shopify.client.graphql.dto.Node;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -37,7 +41,9 @@ public class ShopifyGraphqlClient {
     private static final CharSequence STORE_PLACEHOLDER = "placeholder";
     private static final String GET_CART_GRAPHQL_QUERY_FILE = "/graphql/getCart-query.graphql";
     private static final String CREATE_CART_GRAPHQL_QUERY_FILE = "/graphql/createCart-query.graphql";
+    private static final String ADD_LINE_CART_GRAPHQL_QUERY_FILE = "/graphql/addLineCart-query.graphql";
     private static final Map<String, Object> EMPTY_MAP = Map.of();
+    private static final String GID_SHOPIFY_PRODUCT_VARIANT = "gid://shopify/ProductVariant/%s";
     private final Map<String, String> queryMap;
     private String shopifyGraphqlUrl;
     private static final String CART_ID_STRING_TEMPLATE = "gid://shopify/Cart/%s";
@@ -48,7 +54,8 @@ public class ShopifyGraphqlClient {
         this.shopifyGraphqlUrl = shopifyGraphqlUrl;
         this.queryMap = Map.of(
                 GET_CART_GRAPHQL_QUERY_FILE, readQueryFromFile(GET_CART_GRAPHQL_QUERY_FILE),
-                CREATE_CART_GRAPHQL_QUERY_FILE, readQueryFromFile(CREATE_CART_GRAPHQL_QUERY_FILE)
+                CREATE_CART_GRAPHQL_QUERY_FILE, readQueryFromFile(CREATE_CART_GRAPHQL_QUERY_FILE),
+                ADD_LINE_CART_GRAPHQL_QUERY_FILE, readQueryFromFile(ADD_LINE_CART_GRAPHQL_QUERY_FILE)
         );
     }
 
@@ -78,6 +85,19 @@ public class ShopifyGraphqlClient {
                     , null, EMPTY_MAP, null);
         } else {
             var cartCreateResponse = response.getObject(CartCreateResponse.class, "cartCreate");
+            return cartCreateResponse.cart();
+        }
+    }
+
+    public Cart addLineToCart(SecretValues secretValues, String cartId, String productId, int quantity) {
+        Response response;
+        response = doCall(secretValues, queryMap.get(ADD_LINE_CART_GRAPHQL_QUERY_FILE), Map.of("cartId", String.format(CART_ID_STRING_TEMPLATE, cartId), "lines", List.of (new Line(String.format(GID_SHOPIFY_PRODUCT_VARIANT, productId), quantity))));
+        if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+            throw new ExtensionException(
+                    String.format("Remote api returned some errors: %s", response.getErrors().stream().map(GraphQLError::getMessage).collect(Collectors.joining(System.lineSeparator())))
+                    , null, EMPTY_MAP, null);
+        } else {
+            var cartCreateResponse = response.getObject(CartAddLineResponse.class, "cartLinesAdd");
             return cartCreateResponse.cart();
         }
     }

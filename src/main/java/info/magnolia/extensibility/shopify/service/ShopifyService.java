@@ -25,6 +25,7 @@ import info.magnolia.response.Response;
 import info.magnolia.secrets.api.Secrets;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -130,5 +131,24 @@ public class ShopifyService {
                 .map(shopifyGraphqlClient::createCart)
                 .map(Response::ok)
                 .orElseThrow(() -> new NotFoundException(SHOPIFY_CONFIG_NOT_FOUND, SHOPIFY_CONFIG_NOT_FOUND_FOR_SUBSCRIPTION + subscriptionId));
+    }
+
+    public Response<Cart> addLineToCart(String subscriptionId, String cartId, String productId, Integer quantity) {
+        LOGGER.debug("Calling add line to cart: {} for subscription: {}, product: {} and quantity: {}", subscriptionId, cartId, productId, quantity );
+        return secretValues(subscriptionId)
+                .map( secret -> shopifyGraphqlClient.addLineToCart (secret, cartId, productId, getSanitizedQuantity(quantity)))
+                .map(Response::ok)
+                .orElseThrow(() -> new NotFoundException(SHOPIFY_CONFIG_NOT_FOUND, SHOPIFY_CONFIG_NOT_FOUND_FOR_SUBSCRIPTION + subscriptionId));
+    }
+
+    private int getSanitizedQuantity(Integer quantity) {
+        int sanitizedQuantity;
+        if (Objects.isNull(quantity) || quantity <= 0){
+            sanitizedQuantity = 1;
+        }
+        else {
+            sanitizedQuantity = quantity;
+        }
+        return sanitizedQuantity;
     }
 }

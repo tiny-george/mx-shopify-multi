@@ -22,9 +22,11 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
 @Path("/cart")
@@ -56,6 +58,20 @@ public class CartEndpoints {
     @PermitAll
     public Response createCart(@HeaderParam("subscription-id") String subscriptionId) {
         var item = shopifyService.createCart(subscriptionId);
+        if (item.isOk()) {
+            return Response.ok(item.get()).build();
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(item.getError().getMessage()).build();
+        }
+    }
+
+    @PUT
+    @Path("/{cartId}/{productId}")
+    @Produces(APPLICATION_JSON)
+    @PermitAll
+    public Response addLineToCart(@HeaderParam("subscription-id") String subscriptionId, @PathParam("cartId") String cartId, @PathParam("productId") String productId, @QueryParam("quantity") Integer quantity) {
+        var item = shopifyService.addLineToCart(subscriptionId, cartId, productId, quantity);
         if (item.isOk()) {
             return Response.ok(item.get()).build();
         } else {
