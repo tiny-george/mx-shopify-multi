@@ -30,9 +30,30 @@ public class RenderEndpoints {
     }
 
     private String html(Product product) {
-        var result = "<html><body>";
-        result += "<p>Title:" + product.getTitle() + "</p>";
-        result += "<image src=' "+ product.getImage().getSrc() + "'>";
-        return result + "</body></html>";
+        String result = """
+                <div class="column is-4">
+                    <div class="card is-shady">
+                        <div class="card-image has-text-centered">
+                            <img src=\"""" +
+                product.getImage().getSrc() +
+                """
+                        "/><div class="column is-4">
+                                </div>
+                                <div class="card-content">
+                                    <div class="content">
+                                        <h4>""" +
+                product.getTitle() +
+                "</h4><p>" +
+                product.getBodyHTML().replaceAll("\n", "") +
+                "</p><p>Price: " +
+                (product.getVariants() != null && !product.getVariants().isEmpty() ? product.getVariants().get(0).getPrice() : "Unknown") +
+                """
+                        </p>
+                                        <p><a href="#">Learn more</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>""";
+        return result;
     }
 }
