@@ -7,8 +7,8 @@ import info.magnolia.datasource.api.DatasourceType;
 import info.magnolia.datasource.api.SubscriptionContext;
 import info.magnolia.datasource.filter.Filter;
 import info.magnolia.datasource.filter.Operator;
-import info.magnolia.datasource.http.HttpDatasource;
-import info.magnolia.datasource.tck.DatasourceTest;
+import info.magnolia.datasource.http.HttpItemDatasource;
+import info.magnolia.datasource.tck.DatasourceItemTest;
 import info.magnolia.datasource.tck.FilterTest;
 import info.magnolia.extensibility.shopify.endpoints.WireMockTestExtension;
 import info.magnolia.extensibility.shopify.model.Product;
@@ -25,7 +25,7 @@ import jakarta.inject.Inject;
 
 @QuarkusTest
 @QuarkusTestResource(WireMockTestExtension.class)
-public class ShopifyDatasourceTest extends DatasourceTest<Product> implements FilterTest<Product> {
+public class ShopifyItemDatasourceTest extends DatasourceItemTest<Product> implements FilterTest<Product> {
 
     private static final String SUBSCRIPTION_ID = "aSubscriptionId";
     private static final Map<List<Filter>, Integer> FILTERS_AND_EXPECTED_MATCHING_ELEMENTS = Map.of(
@@ -35,9 +35,13 @@ public class ShopifyDatasourceTest extends DatasourceTest<Product> implements Fi
     ObjectMapper objectMapper;
 
     @Override
-    public Datasource<Product> newDatasource() {
-        return new HttpDatasource<>("shopify", "http://localhost:8081", DatasourceType.EXTENSION,
-                Set.of(DatasourceTrait.LIST_ITEMS, DatasourceTrait.ITEM_RESOLVER, DatasourceTrait.SCHEMATICS, DatasourceTrait.FILTERABLE),
+    public Datasource newDatasource() {
+        return new HttpItemDatasource<>("shopify", "http://localhost:8081", DatasourceType.ITEM,
+                Set.of(
+                        DatasourceTrait.LIST_ITEMS,
+                        DatasourceTrait.ITEM_RESOLVER,
+                        DatasourceTrait.SCHEMATIC_RESOLVER,
+                        DatasourceTrait.FILTERABLE),
                 Product.class, product -> Long.toString(product.getID()), objectMapper);
     }
 

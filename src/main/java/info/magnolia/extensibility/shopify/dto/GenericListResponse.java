@@ -17,9 +17,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-
-
 @JsonTypeName("GenericListResponse")
-public record GenericListResponse<T> (Integer size, List<T> items){
+public record GenericListResponse<T>(Integer size, List<T> items){
 }
 

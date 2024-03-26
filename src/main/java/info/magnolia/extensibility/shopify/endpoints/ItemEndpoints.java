@@ -17,6 +17,10 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import info.magnolia.extensibility.shopify.service.ShopifyService;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -24,23 +28,27 @@ import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
-@Path("/categories")
-public class CategoryEndpoints {
+@Path("/items")
+public class ItemEndpoints {
 
     private final ShopifyService shopifyService;
+    @Context
+    private UriInfo uriInfo;
 
     @Inject
-    public CategoryEndpoints(ShopifyService shopifyService) {
+    public ItemEndpoints(ShopifyService shopifyService) {
         this.shopifyService = shopifyService;
     }
 
     @GET
     @Produces(APPLICATION_JSON)
     @PermitAll
-    public Response allCategories(@HeaderParam( "subscription-id") String subscriptionId) {
-        var items = shopifyService.getCategories(subscriptionId);
+    public Response allItems(@HeaderParam("subscription-id") String subscriptionId) {
+        var items = shopifyService.getItems(subscriptionId, getFilterConditions());
         if (items.isOk()) {
             return Response.ok(items.get()).build();
         } else {
@@ -53,14 +61,22 @@ public class CategoryEndpoints {
     @Path("/{id}")
     @Produces(APPLICATION_JSON)
     @PermitAll
-    public Response getCategory(@PathParam("id") String categoryId, @HeaderParam( "subscription-id") String subscriptionId) {
-        var category = shopifyService.getCategory(subscriptionId, categoryId);
-        if (category.isOk()) {
-            return Response.ok(category.get()).build();
+    public Response oneItem(@PathParam("id") String itemId, @HeaderParam("subscription-id") String subscriptionId) {
+        var item = shopifyService.getItem(subscriptionId, itemId);
+        if (item.isOk()) {
+            return Response.ok(item.get()).build();
         } else {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(category.getError().getMessage()).build();
+                    .entity(item.getError().getMessage()).build();
         }
     }
 
+    private Map<String, Object> getFilterConditions() {
+        if (uriInfo != null && uriInfo.getQueryParameters() != null) {
+            return uriInfo.getQueryParameters().entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> String.join(",", entry.getValue())));
+        } else {
+            return new HashMap<>();
+        }
+    }
 }

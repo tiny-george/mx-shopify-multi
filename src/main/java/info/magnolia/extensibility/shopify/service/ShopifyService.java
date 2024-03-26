@@ -55,15 +55,15 @@ public class ShopifyService {
         this.secrets = secrets;
     }
 
-    public Response<GenericListResponse> getItems(String subscriptionId, Map<String, Object> filters) {
+    public Response<GenericListResponse<Product>> getItems(String subscriptionId, Map<String, Object> filters) {
         LOGGER.debug("Calling get all products of subscription: {}", subscriptionId);
 
         return secretValues(subscriptionId)
-                .map(retrievedSecrets -> shopifyRestClient.getItems(retrievedSecrets,  (String) filters.get(SEARCH_TERM), (Long) filters.computeIfPresent(CATEGORY_ID, (key, value) -> Long.valueOf((String) value))))
-                .map(products -> new GenericListResponse(products.size(), products))
+                .map(retrievedSecrets -> shopifyRestClient.getItems(retrievedSecrets,
+                        (String) filters.get(SEARCH_TERM), collectionIdFilter(filters)))
+                .map(products -> new GenericListResponse<>(products.size(), products))
                 .map(Response::ok)
                 .orElseThrow(() -> new NotFoundException(SHOPIFY_CONFIG_NOT_FOUND, SHOPIFY_CONFIG_NOT_FOUND_FOR_SUBSCRIPTION + subscriptionId));
-
     }
 
 
@@ -77,12 +77,12 @@ public class ShopifyService {
 
     }
 
-    public Response<GenericListResponse> getCategories(String subscriptionId) {
+    public Response<GenericListResponse<CustomCollection>> getCategories(String subscriptionId) {
         LOGGER.debug("Calling get all categories (customcollections) of subscription: {}", subscriptionId);
 
         return secretValues(subscriptionId)
                 .map(shopifyRestClient::getCustomCollections)
-                .map(products -> new GenericListResponse(products.size(), products))
+                .map(products -> new GenericListResponse<>(products.size(), products))
                 .map(Response::ok)
                 .orElseThrow(() -> new NotFoundException(SHOPIFY_CONFIG_NOT_FOUND, SHOPIFY_CONFIG_NOT_FOUND_FOR_SUBSCRIPTION + subscriptionId));
     }
@@ -166,5 +166,12 @@ public class ShopifyService {
             sanitizedQuantity = quantity;
         }
         return sanitizedQuantity;
+    }
+
+    private Long collectionIdFilter(Map<String, Object> filters) {
+        if (filters.containsKey(CATEGORY_ID)) {
+            return Long.valueOf((String) filters.get(CATEGORY_ID));
+        }
+        return null;
     }
 }

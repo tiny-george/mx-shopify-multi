@@ -25,7 +25,7 @@ import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 @QuarkusTestResource(WireMockTestExtension.class)
-class CategoryEndpointsIT {
+class CollectionEndpointsIT {
 
     private static final String SUBSCRIPTION_ID = "aSubscriptionId";
 
@@ -33,7 +33,7 @@ class CategoryEndpointsIT {
     void listOfCategories() {
         given().when()
                 .headers(Map.of("subscription-id", SUBSCRIPTION_ID))
-                .get("/categories/")
+                .get("/collections/")
                 .then().statusCode(200).log().all()
                 .body("size", is(3),
                         "items.size()", is(3),
@@ -45,7 +45,7 @@ class CategoryEndpointsIT {
     void findCategoryById() {
         given().when()
                 .headers(Map.of("subscription-id", SUBSCRIPTION_ID))
-                .get("/categories/1")
+                .get("/collections/1")
                 .then().statusCode(200).log().all()
                 .body("id", is(1),
                         "title", is("Luggage"));
@@ -55,8 +55,7 @@ class CategoryEndpointsIT {
     void categoryNotFound() {
         given().when()
                 .headers(Map.of("subscription-id", SUBSCRIPTION_ID))
-                .get("/categories/2")
+                .get("/collections/2")
                 .then().statusCode(404).log().all();
     }
-
 }

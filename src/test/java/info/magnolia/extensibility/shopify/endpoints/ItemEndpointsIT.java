@@ -25,7 +25,7 @@ import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 @QuarkusTestResource(WireMockTestExtension.class)
-class ProductEndpointsIT {
+class ItemEndpointsIT {
 
     private static final String SUBSCRIPTION_ID = "aSubscriptionId";
     private static final String NOT_AUTHORIZED_SUB_ID = "nonAuthorizedSubId";

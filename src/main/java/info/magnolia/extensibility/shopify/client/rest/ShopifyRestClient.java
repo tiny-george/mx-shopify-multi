@@ -19,13 +19,20 @@ import info.magnolia.extensibility.shopify.model.CustomCollection;
 import info.magnolia.extensibility.shopify.model.Product;
 
 import java.util.List;
+
+import jakarta.ws.rs.WebApplicationException;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 public class ShopifyRestClient {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShopifyRestClient.class);
+
     private ShopifyHttpClient shopifyHttpClient;
     private StoreNameHelper storeNameHelper;
 
@@ -39,8 +46,13 @@ public class ShopifyRestClient {
 
     public List<Product> getItems(SecretValues secretValues, String title, Long collectionId) {
         storeNameHelper.setStoreName(secretValues.store());
-        return shopifyHttpClient
-                .getItems(secretValues.token(),title, collectionId).getProducts();
+        try {
+            return shopifyHttpClient
+                    .getItems(secretValues.token(), title, collectionId).getProducts();
+        } catch (WebApplicationException t) {
+            LOGGER.error("Error getting shopify items", t);
+            throw t;
+        }
     }
 
     public Product getItem(SecretValues secretValues, String itemId) {
