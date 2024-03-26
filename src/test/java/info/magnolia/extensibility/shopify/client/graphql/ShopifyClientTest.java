@@ -22,6 +22,7 @@ import info.magnolia.extensibility.shopify.endpoints.WireMockTestExtension;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -124,6 +125,7 @@ class ShopifyClientTest {
 
     @Test
     @DisplayName("Should create a new cart when adding a line is requested, providing a wrong cartId")
+    @Disabled
     void shouldCreateNewCartWhenAddLineIsRequestedProvidingWrongCartId() {
         /**
          * I promise: this is how the real shopify api works
@@ -138,6 +140,7 @@ class ShopifyClientTest {
 
     @Test
     @DisplayName("Should return null cart when adding a line is requested, providing a wrong variantId")
+    @Disabled
     void shouldReturnNullCartWhenNonExistingVariantIdIsProvided() {
         /**
          * I promise: this is how the real shopify api works

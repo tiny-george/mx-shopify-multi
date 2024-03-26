@@ -11,6 +11,126 @@
         },
         "bodyPatterns": [
           {
+            "and": [
+              {
+                "matchesJsonPath": "$[?(@.variables.lines[?(@.merchandiseId == 'gid://shopify/ProductVariant/nonExistingVariantId')])]"
+              },
+              {
+                "matchesJsonPath": "$[?(@.variables.cartId == 'gid://shopify/Cart/nonExistingCartId')]"
+              }
+            ]
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "cartLinesAdd": {
+              "cart": null
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql",
+        "queryParameters": {
+          "mapping-name": {
+            "equalTo": "addLineToCart"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "and": [
+              {
+                "matchesJsonPath": "$[?(@.variables.lines[?(@.merchandiseId == 'gid://shopify/ProductVariant/31775513411637')])]"
+              },
+              {
+                "matchesJsonPath": "$[?(@.variables.cartId == 'gid://shopify/Cart/nonExistingCartId')]"
+              }
+            ]
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "cartLinesAdd": {
+              "cart": {
+                "id": "gid://shopify/Cart/Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL",
+                "createdAt": "2024-03-07T14:16:14Z",
+                "updatedAt": "2024-03-13T14:35:14Z",
+                "lines": {
+                  "edges": [
+                    {
+                      "node": {
+                        "id": "gid://shopify/CartLine/0c9885eb-8cc5-49f3-a996-93b9fef31987?cart=Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL",
+                        "quantity": 8,
+                        "merchandise": {
+                          "id": "gid://shopify/ProductVariant/31775365726261"
+                        },
+                        "attributes": []
+                      }
+                    },
+                    {
+                      "node": {
+                        "id": "gid://shopify/CartLine/0c9885eb-8cc5-49f3-a996-93b9fef31987?cart=Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL",
+                        "quantity": 1,
+                        "merchandise": {
+                          "id": "gid://shopify/ProductVariant/31775513411637"
+                        },
+                        "attributes": []
+                      }
+                    }
+                  ]
+                },
+                "attributes": [],
+                "cost": {
+                  "totalAmount": {
+                    "amount": "1721.95",
+                    "currencyCode": "EUR"
+                  },
+                  "subtotalAmount": {
+                    "amount": "1721.95",
+                    "currencyCode": "EUR"
+                  },
+                  "totalTaxAmount": null,
+                  "totalDutyAmount": null
+                },
+                "buyerIdentity": {
+                  "email": null,
+                  "phone": null,
+                  "customer": null,
+                  "countryCode": null,
+                  "deliveryAddressPreferences": []
+                }
+              }
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql",
+        "queryParameters": {
+          "mapping-name": {
+            "equalTo": "addLineToCart"
+          }
+        },
+        "bodyPatterns": [
+          {
             "matchesJsonPath": "$[?(@.variables.cartId == 'gid://shopify/Cart/Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL')]"
           }
         ]
@@ -88,7 +208,10 @@
         },
         "bodyPatterns": [
           {
-            "matchesJsonPath": "$[?(@.variables.cartId == 'gid://shopify/Cart/nonExistingCartId')]"
+            "matchesJsonPath": "$[?(@.variables.cartId == 'gid://shopify/Cart/Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL')]"
+          },
+          {
+            "matchesJsonPath": "$[?(@.variables.lines[?(@.merchandiseId == 'gid://shopify/ProductVariant/31775513411637')])]"
           }
         ]
       },
@@ -98,20 +221,41 @@
           "data": {
             "cartLinesAdd": {
               "cart": {
-                "id": "gid://shopify/Cart/Z2NwLXVzLWNlbnRyYWwxOjAxSFJYUk5UWjhNRFJZUks3RVYxRldFVEc3",
-                "createdAt": "2024-03-14T05:59:04Z",
-                "updatedAt": "2024-03-14T05:59:04Z",
+                "id": "gid://shopify/Cart/Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL",
+                "createdAt": "2024-03-07T14:16:14Z",
+                "updatedAt": "2024-03-13T14:35:14Z",
                 "lines": {
-                  "edges": []
+                  "edges": [
+                    {
+                      "node": {
+                        "id": "gid://shopify/CartLine/0c9885eb-8cc5-49f3-a996-93b9fef31987?cart=Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL",
+                        "quantity": 8,
+                        "merchandise": {
+                          "id": "gid://shopify/ProductVariant/31775365726261"
+                        },
+                        "attributes": []
+                      }
+                    },
+                    {
+                      "node": {
+                        "id": "gid://shopify/CartLine/0c9885eb-8cc5-49f3-a996-93b9fef31987?cart=Z2NwLXVzLWNlbnRyYWwxOjAxSFJDTUI1SEJYWlZQRUoxUUJHM0hFUjhL",
+                        "quantity": 1,
+                        "merchandise": {
+                          "id": "gid://shopify/ProductVariant/31775513411637"
+                        },
+                        "attributes": []
+                      }
+                    }
+                  ]
                 },
                 "attributes": [],
                 "cost": {
                   "totalAmount": {
-                    "amount": "0.0",
+                    "amount": "1721.95",
                     "currencyCode": "EUR"
                   },
                   "subtotalAmount": {
-                    "amount": "0.0",
+                    "amount": "1721.95",
                     "currencyCode": "EUR"
                   },
                   "totalTaxAmount": null,
@@ -125,35 +269,6 @@
                   "deliveryAddressPreferences": []
                 }
               }
-            }
-          }
-        },
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
-    {
-      "request": {
-        "method": "POST",
-        "urlPath": "/graphql",
-        "queryParameters": {
-          "mapping-name": {
-            "equalTo": "addLineToCart"
-          }
-        },
-        "bodyPatterns": [
-          {
-            "matchesJsonPath": "$[?(@.variables.lines[?(@.merchandiseId == 'gid://shopify/ProductVariant/nonExistingVariantId')])]"
-          }
-        ]
-      },
-      "response": {
-        "status": 200,
-        "jsonBody": {
-          "data": {
-            "cartLinesAdd": {
-              "cart": null
             }
           }
         },
